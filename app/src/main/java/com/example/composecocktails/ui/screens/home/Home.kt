@@ -53,8 +53,8 @@ fun Home(
     val showDetails = rememberSaveable { (mutableStateOf(false)) }
     val searchedCocktails = viewModel.searchedCocktailList
     val info = viewModel.cocktailAdditionalInfo
-    val showError = viewModel.noResults
     val searchTerm = viewModel.searchTerm
+    val errorType = viewModel.errorType
     val halfScreenHeight = LocalContext.current.resources.displayMetrics
         .run { heightPixels / density }.toInt() / 2
     val gradientDetailsSearch = getGradientDetailsSearch()
@@ -96,9 +96,17 @@ fun Home(
 
             item {
                 ErrorBanner(
-                    errorText = "No cocktails found for: ",
-                    searchTerm = searchTerm.value,
-                    visibility = showError.value
+                    errorText = when (errorType.value) {
+                        is ErrorTypes.NoResult -> "No results for: "
+                        is ErrorTypes.NoConnection -> "No internet connection"
+                        is ErrorTypes.NoError -> ""
+                    },
+                    searchTerm = if (errorType.value == ErrorTypes.NoResult) {
+                        searchTerm.value
+                    } else {
+                        ""
+                    },
+                    visibility = errorType.value == ErrorTypes.NoResult || errorType.value == ErrorTypes.NoConnection
                 )
             }
 
@@ -107,9 +115,9 @@ fun Home(
                     SearchListItem(
                         searchedCocktail = cocktail,
                         showInfo = {
-                        viewModel.cocktailAdditionalInfo = it
-                        showDetails.value = true
-                    })
+                            viewModel.cocktailAdditionalInfo = it
+                            showDetails.value = true
+                        })
                 }
             }
         }

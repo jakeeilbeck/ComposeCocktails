@@ -11,11 +11,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.example.composecocktails.ui.screens.home.Home
 import com.example.composecocktails.ui.theme.*
 import com.example.composecocktails.ui.screens.home.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-
-/*TODO fix app crashing without internet connection*/
-
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @ExperimentalFoundationApi

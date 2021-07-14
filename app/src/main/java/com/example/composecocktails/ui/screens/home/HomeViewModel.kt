@@ -5,45 +5,66 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.composecocktails.data.Repository
 import com.example.composecocktails.data.models.Cocktail
-import com.example.composecocktails.data.remote.Api
+import com.example.composecocktails.util.Utils
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val repository: Repository,
+    private val utils: Utils
+) : ViewModel() {
 
-    private val repository = Repository(Api.create())
     val randomCocktailList = mutableStateListOf<Cocktail.Drink?>()
     var searchedCocktailList by mutableStateOf<List<Cocktail.Drink?>?>(null)
     var cocktailAdditionalInfo by mutableStateOf<Cocktail.Drink?>(null)
-    var noResults = mutableStateOf(false)
     var searchTerm = mutableStateOf("")
-
+    var errorType = mutableStateOf<ErrorTypes>(ErrorTypes.NoError)
 
     init {
         getRandomCocktails()
     }
 
     private fun getRandomCocktails() {
-        viewModelScope.launch {
-            if (randomCocktailList.isEmpty()) {
-                for (i in 1..10) {
-                    val randomCocktail = repository.getRandomCocktail()
-                    randomCocktailList.add(randomCocktail?.get(0))
+        if (utils.isOnlineCheck()) {
+            viewModelScope.launch {
+                if (randomCocktailList.isEmpty()) {
+                    for (i in 1..10) {
+                        val randomCocktail = repository.getRandomCocktail()
+                        randomCocktailList.add(randomCocktail?.get(0))
+                    }
                 }
+                errorType.value = ErrorTypes.NoError
             }
+        } else {
+            errorType.value = ErrorTypes.NoConnection
         }
     }
 
     fun searchCocktail(cocktailName: String) {
-        viewModelScope.launch {
-            val searchedCocktails = repository.searchCocktail(cocktailName)
-            if (searchedCocktails == null) {
-                searchTerm.value = cocktailName
-                noResults.value = true
-            } else {
-                noResults.value = false
-                searchedCocktailList = listOf()
-                searchedCocktailList = searchedCocktails
+        if (utils.isOnlineCheck()) {
+            viewModelScope.launch {
+                val searchedCocktails = repository.searchCocktail(cocktailName)
+                if (searchedCocktails == null) {
+                    searchTerm.value = cocktailName
+                    errorType.value = ErrorTypes.NoResult
+                } else {
+                    searchedCocktailList = listOf()
+                    searchedCocktailList = searchedCocktails
+                    errorType.value = ErrorTypes.NoError
+                }
+                //populate random list for cases where there wasn't an internet connect on app start
+                if (randomCocktailList.isEmpty()) getRandomCocktails()
             }
+        } else {
+            errorType.value = ErrorTypes.NoConnection
         }
     }
+}
+
+sealed class ErrorTypes {
+    object NoConnection : ErrorTypes()
+    object NoResult : ErrorTypes()
+    object NoError : ErrorTypes()
 }

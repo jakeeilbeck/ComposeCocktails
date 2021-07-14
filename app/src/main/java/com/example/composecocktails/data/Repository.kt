@@ -2,8 +2,11 @@ package com.example.composecocktails.data
 
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.data.remote.Api
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Repository(private val api: Api) {
+@Singleton
+class Repository @Inject constructor(private val api: Api) {
 
     suspend fun getRandomCocktail(): List<Cocktail.Drink?>?{
         return api.getRandomCocktail().drinks
