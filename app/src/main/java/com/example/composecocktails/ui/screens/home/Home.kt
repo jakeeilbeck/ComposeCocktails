@@ -45,10 +45,10 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @ExperimentalMaterialApi
 @Composable
 fun Home(
-    randomCocktails: List<Cocktail.Drink?>,
     viewModel: HomeViewModel
 ) {
 
+    val randomCocktails = viewModel.randomCocktailList
     val systemUiController = rememberSystemUiController()
     val showDetails = rememberSaveable { (mutableStateOf(false)) }
     val searchedCocktails = viewModel.searchedCocktailList

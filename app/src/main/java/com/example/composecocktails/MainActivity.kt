@@ -26,13 +26,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val cocktailViewModel by viewModels<HomeViewModel>()
-        cocktailViewModel.getRandomCocktails()
-        val randomCockTails = cocktailViewModel.randomCocktailList
 
         setContent {
             ComposeCocktailsTheme {
                 Surface {
-                    Home(randomCockTails, cocktailViewModel)
+                    Home(cocktailViewModel)
                 }
             }
         }

@@ -17,7 +17,12 @@ class HomeViewModel : ViewModel() {
     var noResults = mutableStateOf(false)
     var searchTerm = mutableStateOf("")
 
-    fun getRandomCocktails() {
+
+    init {
+        getRandomCocktails()
+    }
+
+    private fun getRandomCocktails() {
         viewModelScope.launch {
             if (randomCocktailList.isEmpty()) {
                 for (i in 1..10) {
