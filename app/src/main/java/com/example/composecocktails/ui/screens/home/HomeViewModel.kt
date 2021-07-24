@@ -7,6 +7,8 @@ import com.example.composecocktails.data.Repository
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.util.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,55 +18,89 @@ class HomeViewModel @Inject constructor(
     private val utils: Utils
 ) : ViewModel() {
 
-    val randomCocktailList = mutableStateListOf<Cocktail.Drink?>()
+    var randomCocktailList = mutableStateListOf<Cocktail.Drink?>()
     var searchedCocktailList by mutableStateOf<List<Cocktail.Drink?>?>(null)
     var cocktailAdditionalInfo by mutableStateOf<Cocktail.Drink?>(null)
     var searchTerm = mutableStateOf("")
-    var errorType = mutableStateOf<ErrorTypes>(ErrorTypes.NoError)
+    var searchError = mutableStateOf<ErrorType>(ErrorType.NoError)
+    var generalError = mutableStateOf<ErrorType>(ErrorType.NoError)
+    private var blankRandomCocktails = true
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
 
     init {
         getRandomCocktails()
     }
 
-    private fun getRandomCocktails() {
+    fun getRandomCocktails() {
         if (utils.isOnlineCheck()) {
             viewModelScope.launch {
-                if (randomCocktailList.isEmpty()) {
-                    for (i in 1..10) {
-                        val randomCocktail = repository.getRandomCocktail()
-                        randomCocktailList.add(randomCocktail?.get(0))
+                try {
+
+                    _isRefreshing.emit(true)
+
+                    if (randomCocktailList.isEmpty() || isRefreshing.value) {
+                        randomCocktailList.clear()
+                        for (i in 1..10) {
+                            val randomCocktail = repository.getRandomCocktail()
+                            randomCocktailList.add(randomCocktail?.get(0))
+                        }
                     }
+
+                    blankRandomCocktails = false
+                    _isRefreshing.emit(false)
+                    generalError.value = ErrorType.NoError
+
+                } catch (e: Exception) {
+
+                    generalError.value = ErrorType.OtherError
                 }
-                errorType.value = ErrorTypes.NoError
             }
         } else {
-            errorType.value = ErrorTypes.NoConnection
+            //no internet connection
+            generalError.value = ErrorType.NoConnection
+
+            //add blank cocktails for placeholders to draw on top of
+            val blankCocktail: Cocktail.Drink? = null
+            for (i in 1..10) randomCocktailList.add(blankCocktail)
+            blankRandomCocktails = true
         }
     }
 
     fun searchCocktail(cocktailName: String) {
         if (utils.isOnlineCheck()) {
             viewModelScope.launch {
-                val searchedCocktails = repository.searchCocktail(cocktailName)
-                if (searchedCocktails == null) {
-                    searchTerm.value = cocktailName
-                    errorType.value = ErrorTypes.NoResult
-                } else {
-                    searchedCocktailList = listOf()
-                    searchedCocktailList = searchedCocktails
-                    errorType.value = ErrorTypes.NoError
+                try {
+
+                    val searchedCocktails = repository.searchCocktail(cocktailName)
+
+                    if (searchedCocktails == null) {
+                        searchTerm.value = cocktailName
+                        searchError.value = ErrorType.NoResult
+                    } else {
+                        searchedCocktailList = listOf()
+                        searchedCocktailList = searchedCocktails
+                        searchError.value = ErrorType.NoError
+                    }
+
+                    //populate carousel random list for cases where there wasn't an internet connection on app start
+                    if (blankRandomCocktails) getRandomCocktails()
+
+                } catch (e: Exception) {
+
+                    generalError.value = ErrorType.OtherError
                 }
-                //populate random list for cases where there wasn't an internet connect on app start
-                if (randomCocktailList.isEmpty()) getRandomCocktails()
             }
         } else {
-            errorType.value = ErrorTypes.NoConnection
+            //no internet connection
+            generalError.value = ErrorType.NoConnection
         }
     }
 }
 
-sealed class ErrorTypes {
-    object NoConnection : ErrorTypes()
-    object NoResult : ErrorTypes()
-    object NoError : ErrorTypes()
+sealed class ErrorType {
+    object NoConnection : ErrorType()
+    object NoResult : ErrorType()
+    object OtherError : ErrorType()
+    object NoError : ErrorType()
 }

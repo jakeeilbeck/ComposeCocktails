@@ -12,9 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -37,6 +35,11 @@ import com.example.composecocktails.ui.theme.getGradientDetailsSearch
 import com.example.composecocktails.ui.theme.getGradientErrorBackground
 import com.example.composecocktails.ui.theme.getGradientHeader
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.shimmer
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @ExperimentalAnimationApi
@@ -54,87 +57,112 @@ fun Home(
     val searchedCocktails = viewModel.searchedCocktailList
     val info = viewModel.cocktailAdditionalInfo
     val searchTerm = viewModel.searchTerm
-    val errorType = viewModel.errorType
+    val errorType = when {
+                        viewModel.generalError.value != ErrorType.NoError -> {
+                            viewModel.generalError.value
+                        }
+                        viewModel.searchError.value != ErrorType.NoError -> {
+                            viewModel.searchError.value
+                        }
+                        else -> {
+                            ErrorType.NoError
+                        }
+                    }
     val halfScreenHeight = LocalContext.current.resources.displayMetrics
         .run { heightPixels / density }.toInt() / 2
     val gradientDetailsSearch = getGradientDetailsSearch()
     val gradientHeader = getGradientHeader()
     val gradientBackground = getGradientBackground()
     val statusBarColour = MaterialTheme.colors.surface
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     SideEffect {
         systemUiController.setStatusBarColor(statusBarColour)
     }
 
     Box {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(brush = gradientBackground)
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+            onRefresh = {
+                viewModel.getRandomCocktails()
+            },
+            refreshTriggerDistance = 70.dp
         ) {
-            item {
-                Header(
-                    "Why not try...",
-                    gradientHeader
-                )
-            }
 
-            item {
-                Carousel(randomCocktails) {
-                    viewModel.cocktailAdditionalInfo = it
-                    showDetails.value = true
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(brush = gradientBackground)
+            ) {
+
+                item {
+                    Header(
+                        "Why not try...",
+                        gradientHeader
+                    )
                 }
-            }
 
-            stickyHeader {
-                SearchBar(
-                    gradientBg = gradientDetailsSearch,
-                    searchCocktail = {
-                        viewModel.searchCocktail(it)
-                    })
-            }
+                item {
+                    Carousel(randomCocktails) {
+                        viewModel.cocktailAdditionalInfo = it
+                        showDetails.value = true
+                    }
+                }
 
-            item {
-                ErrorBanner(
-                    errorText = when (errorType.value) {
-                        is ErrorTypes.NoResult -> "No results for: "
-                        is ErrorTypes.NoConnection -> "No internet connection"
-                        is ErrorTypes.NoError -> ""
-                    },
-                    searchTerm = if (errorType.value == ErrorTypes.NoResult) {
-                        searchTerm.value
-                    } else {
-                        ""
-                    },
-                    visibility = errorType.value == ErrorTypes.NoResult || errorType.value == ErrorTypes.NoConnection
-                )
-            }
-
-            if (!searchedCocktails.isNullOrEmpty()) {
-                items(searchedCocktails) { cocktail ->
-                    SearchListItem(
-                        searchedCocktail = cocktail,
-                        showInfo = {
-                            viewModel.cocktailAdditionalInfo = it
-                            showDetails.value = true
+                stickyHeader {
+                    SearchBar(
+                        gradientBg = gradientDetailsSearch,
+                        searchCocktail = {
+                            viewModel.searchCocktail(it)
                         })
                 }
-            }
-        }
 
-        LazyColumn(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .clip(MaterialTheme.shapes.large)
-                .heightIn(0.dp, halfScreenHeight.dp)
-        ) {
-            item {
-                DetailsWindow(
-                    cocktail = info,
-                    visibility = showDetails.value,
-                    gradientBg = gradientDetailsSearch
-                ) {
-                    showDetails.value = false
+                item {
+                    ErrorBanner(
+                        errorText = when (errorType) {
+                            is ErrorType.NoResult -> "No results for: "
+                            is ErrorType.NoConnection -> "No internet connection"
+                            is ErrorType.OtherError -> "Error getting results"
+                            is ErrorType.NoError -> ""
+                        },
+                        //show the not found cocktail name in the error message
+                        searchTerm = if (errorType == ErrorType.NoResult) {
+                            searchTerm.value
+                        } else {
+                            //otherwise don't append anything to the error message
+                            ""
+                        },
+                        visibility = errorType != ErrorType.NoError
+                    )
+                }
+
+                if (!searchedCocktails.isNullOrEmpty()) {
+                    items(searchedCocktails) { cocktail ->
+                        SearchListItem(
+                            searchedCocktail = cocktail,
+                            showInfo = {
+                                viewModel.cocktailAdditionalInfo = it
+                                showDetails.value = true
+                            })
+                    }
+                }
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .clip(MaterialTheme.shapes.large)
+                    .heightIn(0.dp, halfScreenHeight.dp)
+            ) {
+
+                item {
+                    DetailsWindow(
+                        cocktail = info,
+                        visibility = showDetails.value,
+                        gradientBg = gradientDetailsSearch
+                    ) {
+                        showDetails.value = false
+                    }
                 }
             }
         }
@@ -169,7 +197,12 @@ fun Carousel(
     randomCocktails: List<Cocktail.Drink?>,
     showInfo: (Cocktail.Drink?) -> Unit
 ) {
-    Surface(color = MaterialTheme.colors.primaryVariant) {
+    Surface(
+        color = MaterialTheme.colors.primaryVariant,
+        modifier = Modifier
+            //fixed size to stop carousel disappearing on recomposition
+            .height(184.dp)
+    ) {
         LazyRow {
             items(randomCocktails) { cocktail ->
                 CarouselItem(randomCocktail = cocktail, showInfo = { showInfo(it) })
@@ -202,13 +235,23 @@ fun CarouselItem(
                 ),
                 modifier = modifier
                     .size(124.dp)
-                    .clip(shape = MaterialTheme.shapes.small),
+                    .clip(shape = MaterialTheme.shapes.small)
+                    .placeholder(
+                        visible = randomCocktail == null,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
+                ,
                 contentDescription = null
             )
             Text(
                 modifier = modifier
                     .padding(0.dp, 8.dp, 0.dp, 0.dp)
-                    .width(124.dp),
+                    .width(124.dp)
+                    .placeholder(
+                        visible = randomCocktail == null,
+                        highlight = PlaceholderHighlight.shimmer()
+                    )
+                ,
                 text = randomCocktail?.strDrink.toString(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -336,7 +379,8 @@ fun DetailsWindow(
                     .padding(8.dp)
             ) {
                 Text(
-                    text = cocktail?.strDrink.toString(),
+                    //"Nothing to show" text will display when empty placeholder is clicked
+                    text = cocktail?.strDrink ?: "Nothing to show",
                     style = MaterialTheme.typography.h5,
                     modifier = modifier
                         .weight(10f)
@@ -350,7 +394,7 @@ fun DetailsWindow(
             }
 
             Text(
-                text = cocktail?.strInstructions.toString(),
+                text = cocktail?.strInstructions ?: "",
                 style = MaterialTheme.typography.body1,
                 modifier = modifier
                     .padding(8.dp)

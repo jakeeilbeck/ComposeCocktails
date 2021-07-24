@@ -75,10 +75,16 @@ dependencies {
 
     //Coil image loading
     implementation "io.coil-kt:coil:1.2.2"
-    implementation "com.google.accompanist:accompanist-coil:0.13.0"
+    implementation "com.google.accompanist:accompanist-coil:$accompanist_version"
+
+    //Compose SwipeRefresh
+    implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist_version"
+
+    //Placeholders
+    implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist_version"
 
     //System UI Controller (to change status bar colour)
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.13.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
 
     //hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
