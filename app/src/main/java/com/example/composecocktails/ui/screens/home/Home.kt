@@ -319,10 +319,7 @@ fun SearchListItem(
             .clickable { showInfo(searchedCocktail) },
         elevation = 2.dp
     ) {
-        Row(
-            modifier = Modifier
-                .padding(4.dp),
-        ) {
+        Row{
             ListItem(
                 icon = {
                     Image(
@@ -332,9 +329,7 @@ fun SearchListItem(
                         ),
                         modifier = modifier
                             .size(64.dp)
-                            .clip(shape = MaterialTheme.shapes.small)
-                            .padding(0.dp)
-                            .widthIn(0.dp),
+                            .clip(shape = MaterialTheme.shapes.small),
                         contentDescription = null
                     )
                 },
