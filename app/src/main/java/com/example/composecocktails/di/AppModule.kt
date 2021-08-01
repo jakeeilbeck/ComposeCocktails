@@ -1,12 +1,17 @@
 package com.example.composecocktails.di
 
+import android.content.Context
+import androidx.room.Room
 import com.example.composecocktails.data.Repository
+import com.example.composecocktails.data.local.FavouriteDatabase
+import com.example.composecocktails.data.local.FavouritesDAO
 import com.example.composecocktails.data.remote.Api
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -57,6 +62,22 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(api: Api): Repository =
-        Repository(api)
+    fun provideRepository(api: Api, favouritesDAO: FavouritesDAO): Repository =
+        Repository(api, favouritesDAO)
+
+    @Provides
+    @Singleton
+    fun provideRoomDatabase(@ApplicationContext context: Context): FavouriteDatabase =
+        Room.databaseBuilder(
+            context.applicationContext,
+            FavouriteDatabase::class.java,
+            "favourite_cocktails_table"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideFavouritesDAO(favouriteDatabase: FavouriteDatabase): FavouritesDAO =
+        favouriteDatabase.favouritesDAO
 }

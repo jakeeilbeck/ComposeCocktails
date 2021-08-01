@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,8 +19,8 @@ class HomeViewModel @Inject constructor(
     private val utils: Utils
 ) : ViewModel() {
 
-    var randomCocktailList = mutableStateListOf<Cocktail.Drink?>()
-    var searchedCocktailList by mutableStateOf<List<Cocktail.Drink?>?>(null)
+    val randomCocktailList = mutableStateListOf<Cocktail.Drink?>()
+    val searchedCocktailList = mutableStateListOf<Cocktail.Drink?>()
     var cocktailAdditionalInfo by mutableStateOf<Cocktail.Drink?>(null)
     var searchTerm = mutableStateOf("")
     var searchError = mutableStateOf<ErrorType>(ErrorType.NoError)
@@ -78,8 +79,15 @@ class HomeViewModel @Inject constructor(
                         searchTerm.value = cocktailName
                         searchError.value = ErrorType.NoResult
                     } else {
-                        searchedCocktailList = listOf()
-                        searchedCocktailList = searchedCocktails
+                        searchedCocktailList.clear()
+
+                        //Check if items are currently in favourites to show as such in the ui
+                        searchedCocktails.map {
+                            it?.isFavourite = checkIsFavourite(it?.idDrink.toString())
+                        }
+
+                        searchedCocktailList.addAll(searchedCocktails)
+
                         searchError.value = ErrorType.NoError
                     }
 
@@ -94,6 +102,53 @@ class HomeViewModel @Inject constructor(
         } else {
             //no internet connection
             generalError.value = ErrorType.NoConnection
+        }
+    }
+
+    fun updateFavourite(cocktail: Cocktail.Drink){
+        /*
+        https://stackoverflow.com/questions/66448722
+        Replace clicked cocktail item with isFavourite reassigned instead of just reassigning
+        isFavourite to existing item, as object reference needs to change for recomposition to
+        happen to list item
+        */
+
+        val cocktailIndex = searchedCocktailList.indexOf(cocktail)
+        val replacement = cocktail.copy()
+
+        if (checkIsFavourite(cocktail.idDrink)){
+
+            deleteFromFavourites(cocktail)
+
+            replacement.isFavourite = false
+            searchedCocktailList[cocktailIndex] = replacement
+        }else{
+
+            addToFavourites(cocktail)
+
+            replacement.isFavourite = true
+            searchedCocktailList[cocktailIndex] = replacement
+        }
+    }
+
+    private fun checkIsFavourite(cocktailId: String) =
+        runBlocking {
+            repository.checkFavourite(cocktailId) == 1
+        }
+
+    private fun addToFavourites(cocktail: Cocktail.Drink){
+        viewModelScope.launch {
+            repository.insertCocktail(
+                cocktail
+            )
+        }
+    }
+
+    private fun deleteFromFavourites(cocktail: Cocktail.Drink){
+        viewModelScope.launch {
+            repository.deleteCocktail(
+                cocktail
+            )
         }
     }
 }

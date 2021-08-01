@@ -8,6 +8,8 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.*
 import androidx.compose.ui.ExperimentalComposeUiApi
+import com.example.composecocktails.ui.screens.favourites.Favourites
+import com.example.composecocktails.ui.screens.favourites.FavouritesViewModel
 import com.example.composecocktails.ui.screens.home.Home
 import com.example.composecocktails.ui.theme.*
 import com.example.composecocktails.ui.screens.home.HomeViewModel
@@ -23,12 +25,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val cocktailViewModel by viewModels<HomeViewModel>()
+        val homeViewModel by viewModels<HomeViewModel>()
+        val favouritesViewModel by viewModels<FavouritesViewModel>()
 
         setContent {
             ComposeCocktailsTheme {
                 Surface {
-                    Home(cocktailViewModel)
+                    Home(homeViewModel)
+//                    Favourites(favouritesViewModel)
                 }
             }
         }

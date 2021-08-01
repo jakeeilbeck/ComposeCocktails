@@ -1,10 +1,9 @@
 package com.example.composecocktails.ui.screens.home
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -12,14 +11,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -58,16 +59,16 @@ fun Home(
     val info = viewModel.cocktailAdditionalInfo
     val searchTerm = viewModel.searchTerm
     val errorType = when {
-                        viewModel.generalError.value != ErrorType.NoError -> {
-                            viewModel.generalError.value
-                        }
-                        viewModel.searchError.value != ErrorType.NoError -> {
-                            viewModel.searchError.value
-                        }
-                        else -> {
-                            ErrorType.NoError
-                        }
-                    }
+        viewModel.generalError.value != ErrorType.NoError -> {
+            viewModel.generalError.value
+        }
+        viewModel.searchError.value != ErrorType.NoError -> {
+            viewModel.searchError.value
+        }
+        else -> {
+            ErrorType.NoError
+        }
+    }
     val halfScreenHeight = LocalContext.current.resources.displayMetrics
         .run { heightPixels / density }.toInt() / 2
     val gradientDetailsSearch = getGradientDetailsSearch()
@@ -138,12 +139,16 @@ fun Home(
 
                 if (!searchedCocktails.isNullOrEmpty()) {
                     items(searchedCocktails) { cocktail ->
-                        SearchListItem(
-                            searchedCocktail = cocktail,
-                            showInfo = {
-                                viewModel.cocktailAdditionalInfo = it
-                                showDetails.value = true
-                            })
+                        if (cocktail != null) {
+                            SearchListItem(
+                                searchedCocktail = cocktail,
+                                showInfo = {
+                                    viewModel.cocktailAdditionalInfo = it
+                                    showDetails.value = true
+                                },
+                                updateFavourite = { viewModel.updateFavourite(it) }
+                            )
+                        }
                     }
                 }
             }
@@ -239,8 +244,7 @@ fun CarouselItem(
                     .placeholder(
                         visible = randomCocktail == null,
                         highlight = PlaceholderHighlight.shimmer()
-                    )
-                ,
+                    ),
                 contentDescription = null
             )
             Text(
@@ -250,8 +254,7 @@ fun CarouselItem(
                     .placeholder(
                         visible = randomCocktail == null,
                         highlight = PlaceholderHighlight.shimmer()
-                    )
-                ,
+                    ),
                 text = randomCocktail?.strDrink.toString(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -306,25 +309,27 @@ fun SearchBar(
     }
 }
 
+@SuppressLint("UnusedTransitionTargetStateParameter")
 @ExperimentalMaterialApi
 @Composable
 fun SearchListItem(
     modifier: Modifier = Modifier,
-    searchedCocktail: Cocktail.Drink?,
-    showInfo: (Cocktail.Drink?) -> Unit
+    searchedCocktail: Cocktail.Drink,
+    showInfo: (Cocktail.Drink?) -> Unit,
+    updateFavourite: (Cocktail.Drink) -> Unit
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
             .clickable { showInfo(searchedCocktail) },
         elevation = 2.dp
     ) {
-        Row{
+        Row {
             ListItem(
                 icon = {
                     Image(
                         painter = rememberCoilPainter(
-                            request = searchedCocktail?.strDrinkThumb,
+                            request = searchedCocktail.strDrinkThumb,
                             fadeIn = true
                         ),
                         modifier = modifier
@@ -333,8 +338,54 @@ fun SearchListItem(
                         contentDescription = null
                     )
                 },
-                text = { Text(text = searchedCocktail?.strDrink.toString()) },
-                secondaryText = { Text(text = searchedCocktail?.strCategory.toString()) }
+                text = { Text(text = searchedCocktail.strDrink.toString()) },
+                secondaryText = { Text(text = searchedCocktail.strCategory.toString()) },
+                trailing =
+                {
+                    IconToggleButton(
+                        checked = searchedCocktail.isFavourite,
+                        onCheckedChange = {
+                            updateFavourite(searchedCocktail)
+                        }
+                    ) {
+                        //favourite click animation
+                        val transition = updateTransition(
+                            searchedCocktail.isFavourite,
+                            label = "isFavourite indicator"
+                        )
+
+                        val tint by transition.animateColor(
+                            label = "Tint"
+                        ) {
+                            if (searchedCocktail.isFavourite) Color.Red else Color.LightGray
+                        }
+
+                        val size by transition.animateDp(
+                            transitionSpec = {
+                                if (false isTransitioningTo true) {
+                                    keyframes {
+                                        durationMillis = 250
+                                        35.dp at 0 with LinearOutSlowInEasing
+                                        40.dp at 15 with FastOutLinearInEasing
+                                        50.dp at 75
+                                        42.dp at 150
+                                    }
+                                } else {
+                                    spring(stiffness = Spring.StiffnessVeryLow)
+                                }
+                            },
+                            label = "Size"
+                        ) { 42.dp }
+
+                        Icon(
+                            imageVector = if (searchedCocktail.isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = null,
+                            tint = tint,
+                            modifier = modifier
+                                .size(size),
+                        )
+                    }
+                }
             )
         }
     }
