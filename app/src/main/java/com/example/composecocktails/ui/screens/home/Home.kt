@@ -354,35 +354,43 @@ fun SearchListItem(
                             label = "isFavourite indicator"
                         )
 
-                        val tint by transition.animateColor(
+                        //favourites icon animations
+                        val animateTint by transition.animateColor(
                             label = "Tint"
                         ) {
                             if (searchedCocktail.isFavourite) Color.Red else Color.LightGray
                         }
 
-                        val size by transition.animateDp(
+                        val animateSize by transition.animateDp(
                             transitionSpec = {
                                 if (false isTransitioningTo true) {
                                     keyframes {
                                         durationMillis = 250
-                                        35.dp at 0 with LinearOutSlowInEasing
-                                        40.dp at 15 with FastOutLinearInEasing
-                                        50.dp at 75
-                                        42.dp at 150
+                                        35.dp at 0
+                                        40.dp at 15
+                                        52.dp at 75
+                                        42.dp at 250
                                     }
                                 } else {
-                                    spring(stiffness = Spring.StiffnessVeryLow)
+                                    keyframes {
+                                        durationMillis = 250
+                                        52.dp at 0
+                                        42.dp at 15
+                                        35.dp at 75
+                                        42.dp at 250
+                                    }
                                 }
                             },
                             label = "Size"
                         ) { 42.dp }
 
+                        //update favourites icon with animations
                         Icon(
                             imageVector = if (searchedCocktail.isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = null,
-                            tint = tint,
+                            tint = animateTint,
                             modifier = modifier
-                                .size(size),
+                                .size(animateSize),
                         )
                     }
                 }
@@ -418,6 +426,7 @@ fun DetailsWindow(
                 .background(gradientBg)
                 .clip(MaterialTheme.shapes.large)
                 .clickable { closeAdditionalInfo() }
+                .animateContentSize()
         ) {
             Row(
                 modifier
