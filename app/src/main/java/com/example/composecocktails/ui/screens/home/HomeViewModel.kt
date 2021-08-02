@@ -153,9 +153,9 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-sealed class ErrorType {
-    object NoConnection : ErrorType()
-    object NoResult : ErrorType()
-    object OtherError : ErrorType()
-    object NoError : ErrorType()
+sealed class ErrorType(var errorMessage: String) {
+    object NoConnection : ErrorType("No internet connection")
+    object NoResult : ErrorType("No results for: ")
+    object OtherError : ErrorType("Error getting results")
+    object NoError : ErrorType("")
 }

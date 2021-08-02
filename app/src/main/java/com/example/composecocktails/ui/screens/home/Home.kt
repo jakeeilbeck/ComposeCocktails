@@ -120,12 +120,7 @@ fun Home(
 
                 item {
                     ErrorBanner(
-                        errorText = when (errorType) {
-                            is ErrorType.NoResult -> "No results for: "
-                            is ErrorType.NoConnection -> "No internet connection"
-                            is ErrorType.OtherError -> "Error getting results"
-                            is ErrorType.NoError -> ""
-                        },
+                        errorText = errorType.errorMessage,
                         //show the not found cocktail name in the error message
                         searchTerm = if (errorType == ErrorType.NoResult) {
                             searchTerm.value
