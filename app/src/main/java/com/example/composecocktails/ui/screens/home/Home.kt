@@ -22,11 +22,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composecocktails.data.models.Cocktail
-import com.example.composecocktails.ui.screens.CocktailListItem
-import com.example.composecocktails.ui.screens.DetailsWindow
-import com.example.composecocktails.ui.screens.ErrorBanner
+import com.example.composecocktails.ui.CocktailListItem
+import com.example.composecocktails.ui.DetailsWindow
+import com.example.composecocktails.ui.ErrorBanner
 import com.example.composecocktails.ui.theme.gradientBackground
 import com.example.composecocktails.ui.theme.gradientDetailsSearch
 import com.example.composecocktails.ui.theme.gradientHeader
