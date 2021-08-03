@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.ui.screens.CocktailListItem
 import com.example.composecocktails.ui.screens.DetailsWindow
@@ -109,7 +110,8 @@ fun Home(
                         gradientBg = gradientDetailsSearch,
                         searchCocktail = {
                             viewModel.searchCocktail(it)
-                        })
+                        },
+                        searchQuery = searchTerm)
                 }
 
                 item {
@@ -257,9 +259,9 @@ fun CarouselItem(
 fun SearchBar(
     gradientBg: Brush,
     modifier: Modifier = Modifier,
-    searchCocktail: (String) -> Unit
+    searchCocktail: (String) -> Unit,
+    searchQuery: MutableState<String>
 ) {
-    val searchQuery = rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -290,6 +292,7 @@ fun SearchBar(
             maxLines = 1,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
+                searchQuery.value = searchQuery.value.trim()
                 searchCocktail(searchQuery.value)
                 focusManager.clearFocus()
                 keyboardController?.hide()
