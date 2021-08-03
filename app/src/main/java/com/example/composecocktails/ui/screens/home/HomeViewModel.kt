@@ -89,6 +89,7 @@ class HomeViewModel @Inject constructor(
                         searchedCocktailList.addAll(searchedCocktails)
 
                         searchError.value = ErrorType.NoError
+                        generalError.value = ErrorType.NoError
                     }
 
                     //populate carousel random list for cases where there wasn't an internet connection on app start
