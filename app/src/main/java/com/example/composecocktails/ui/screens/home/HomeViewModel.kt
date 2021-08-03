@@ -139,7 +139,7 @@ class HomeViewModel @Inject constructor(
     private fun addToFavourites(cocktail: Cocktail.Drink){
         viewModelScope.launch {
             repository.insertCocktail(
-                cocktail
+                cocktail.apply { isFavourite = true }
             )
         }
     }

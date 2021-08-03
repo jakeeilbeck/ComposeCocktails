@@ -3,9 +3,10 @@ package com.example.composecocktails.ui.theme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 
 @Composable
-fun getGradientDetailsSearch(): Brush {
+fun gradientDetailsSearch(): Brush {
     return Brush.linearGradient(
         colors = listOf(
             MaterialTheme.colors.secondary,
@@ -15,7 +16,7 @@ fun getGradientDetailsSearch(): Brush {
 }
 
 @Composable
-fun getGradientHeader(): Brush {
+fun gradientHeader(): Brush {
     return Brush.linearGradient(
         colors = listOf(
             MaterialTheme.colors.surface,
@@ -25,7 +26,7 @@ fun getGradientHeader(): Brush {
 }
 
 @Composable
-fun getGradientBackground(): Brush {
+fun gradientBackground(): Brush {
     return if (MaterialTheme.colors.isLight){
         Brush.verticalGradient(
             colors = listOf(
@@ -44,7 +45,7 @@ fun getGradientBackground(): Brush {
 }
 
 @Composable
-fun getGradientErrorBackground(): Brush {
+fun gradientErrorBackground(): Brush {
     return if (MaterialTheme.colors.isLight){
         Brush.linearGradient(
             colors = listOf(
@@ -61,4 +62,15 @@ fun getGradientErrorBackground(): Brush {
             )
         )
     }
+}
+
+@Composable
+fun gradientBlueBackground(): Brush{
+    return Brush.linearGradient(
+        colors = listOf(
+            Color(0xFF6200EA),
+            Color(0xFF304FFE),
+            Color(0xFF00BFA5),
+        )
+    )
 }
