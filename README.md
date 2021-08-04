@@ -4,7 +4,7 @@
 
 # Compose Cocktails
 
-An app built with [Jetpack Compose](https://developer.android.com/jetpack/compose) to experiment and learn the new UI toolkit.  
+An app built with [Jetpack Compose](https://developer.android.com/jetpack/compose) to experiment with and learn the new UI toolkit.  
 API provided by https://www.thecocktaildb.com/api.php
 
 Video:
