@@ -16,12 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.composecocktails.ui.CocktailListItem
-import com.example.composecocktails.ui.DetailsWindow
-import com.example.composecocktails.ui.ErrorBanner
+import com.example.composecocktails.ui.screens.CocktailListItem
+import com.example.composecocktails.ui.screens.DetailsWindow
+import com.example.composecocktails.ui.screens.ErrorBanner
+import com.example.composecocktails.ui.theme.gradientBackground
 import com.example.composecocktails.ui.theme.gradientBlueBackground
 import com.example.composecocktails.ui.theme.gradientDetailsSearch
-
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
@@ -32,12 +33,22 @@ fun Favourites(
     viewModel: FavouritesViewModel
 ) {
 
+    val systemUiController = rememberSystemUiController()
     val favourites = viewModel.favouriteCocktails.observeAsState()
     val showDetails = rememberSaveable { (mutableStateOf(false)) }
     val halfScreenHeight = LocalContext.current.resources.displayMetrics
         .run { heightPixels / density }.toInt() / 2
+    val statusBarColour = MaterialTheme.colors.surface
 
-    Box{
+    SideEffect {
+        systemUiController.setStatusBarColor(statusBarColour)
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(brush = gradientBackground())
+    ){
 
         LazyColumn(
             modifier = Modifier
@@ -56,13 +67,13 @@ fun Favourites(
                     )
                 }
             }
+        }
 
-            item{
-                ErrorBanner(
-                    errorText = "No favourites to show",
-                    visibility = favourites.value.isNullOrEmpty() ,
-                    gradient = gradientBlueBackground())
-            }
+        Box(modifier = Modifier.align(Alignment.Center)){
+            ErrorBanner(
+                errorText = "No favourites to show",
+                visibility = favourites.value.isNullOrEmpty() ,
+                gradient = gradientBlueBackground())
         }
 
         LazyColumn(

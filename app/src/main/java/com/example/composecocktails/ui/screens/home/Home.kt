@@ -23,9 +23,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.composecocktails.data.models.Cocktail
-import com.example.composecocktails.ui.CocktailListItem
-import com.example.composecocktails.ui.DetailsWindow
-import com.example.composecocktails.ui.ErrorBanner
+import com.example.composecocktails.ui.screens.CocktailListItem
+import com.example.composecocktails.ui.screens.DetailsWindow
+import com.example.composecocktails.ui.screens.ErrorBanner
 import com.example.composecocktails.ui.theme.gradientBackground
 import com.example.composecocktails.ui.theme.gradientDetailsSearch
 import com.example.composecocktails.ui.theme.gradientHeader
@@ -65,9 +65,6 @@ fun Home(
     }
     val halfScreenHeight = LocalContext.current.resources.displayMetrics
         .run { heightPixels / density }.toInt() / 2
-    val gradientDetailsSearch = gradientDetailsSearch()
-    val gradientHeader = gradientHeader()
-    val gradientBackground = gradientBackground()
     val statusBarColour = MaterialTheme.colors.surface
     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
@@ -87,13 +84,13 @@ fun Home(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(brush = gradientBackground)
+                    .background(brush = gradientBackground())
             ) {
 
                 item {
                     Header(
                         "Why not try...",
-                        gradientHeader
+                        gradientHeader()
                     )
                 }
 
@@ -106,11 +103,11 @@ fun Home(
 
                 stickyHeader {
                     SearchBar(
-                        gradientBg = gradientDetailsSearch,
+                        gradientBg = gradientDetailsSearch(),
                         searchCocktail = {
                             viewModel.searchCocktail(it)
                         },
-                        searchQuery = searchTerm)
+                    )
                 }
 
                 item {
@@ -154,7 +151,7 @@ fun Home(
                     DetailsWindow(
                         cocktail = info,
                         visibility = showDetails.value,
-                        gradientBg = gradientDetailsSearch
+                        gradientBg = gradientDetailsSearch()
                     ) {
                         showDetails.value = false
                     }
@@ -259,8 +256,8 @@ fun SearchBar(
     gradientBg: Brush,
     modifier: Modifier = Modifier,
     searchCocktail: (String) -> Unit,
-    searchQuery: MutableState<String>
 ) {
+    val searchQuery = rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 

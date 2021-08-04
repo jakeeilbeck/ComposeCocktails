@@ -1,4 +1,4 @@
-package com.example.composecocktails.ui
+package com.example.composecocktails.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
