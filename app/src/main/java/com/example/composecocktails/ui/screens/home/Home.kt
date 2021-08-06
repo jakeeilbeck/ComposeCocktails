@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.ui.screens.CocktailListItem
 import com.example.composecocktails.ui.screens.DetailsWindow
@@ -29,7 +30,6 @@ import com.example.composecocktails.ui.screens.ErrorBanner
 import com.example.composecocktails.ui.theme.gradientBackground
 import com.example.composecocktails.ui.theme.gradientDetailsSearch
 import com.example.composecocktails.ui.theme.gradientHeader
-import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.material.placeholder
@@ -219,9 +219,9 @@ fun CarouselItem(
                 .padding(8.dp)
         ) {
             Image(
-                painter = rememberCoilPainter(
-                    request = randomCocktail?.strDrinkThumb,
-                    fadeIn = true
+                painter = rememberImagePainter(
+                    data = randomCocktail?.strDrinkThumb,
+                    builder = { crossfade(true) }
                 ),
                 modifier = modifier
                     .size(124.dp)
