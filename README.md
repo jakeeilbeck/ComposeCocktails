@@ -14,5 +14,5 @@ https://user-images.githubusercontent.com/46408323/128252217-247960b9-ef79-40dc-
 
 Screenshots:
 
-![App screenshot dark theme](https://i.imgur.com/P2h4EVT.png)
-![App screenshot light theme](https://i.imgur.com/rQpgY1U.png)
+![App screenshot dark theme](https://i.imgur.com/QtTcTQg.png)
+![App screenshot light theme](https://i.imgur.com/PpiIYzs.png)
