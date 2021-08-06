@@ -3,9 +3,7 @@ package com.example.composecocktails.ui.screens.home
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -43,7 +41,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @ExperimentalMaterialApi
 @Composable
 fun Home(
-    viewModel: HomeViewModel
+    viewModel: HomeViewModel,
+    listState: LazyListState
 ) {
 
     val randomCocktails = viewModel.randomCocktailList
@@ -84,7 +83,8 @@ fun Home(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(brush = gradientBackground())
+                    .background(brush = gradientBackground()),
+                state = listState
             ) {
 
                 item {

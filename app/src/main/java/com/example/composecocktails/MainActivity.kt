@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -66,6 +67,7 @@ fun BottomNav(homeViewModel: HomeViewModel, favouritesViewModel: FavouritesViewM
         Screens.Favourites
     )
     val navController = rememberNavController()
+    val listState = rememberLazyListState()
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -106,7 +108,7 @@ fun BottomNav(homeViewModel: HomeViewModel, favouritesViewModel: FavouritesViewM
             startDestination = Screens.Home.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(Screens.Home.route) { Home(homeViewModel) }
+            composable(Screens.Home.route) { Home(homeViewModel, listState) }
             composable(Screens.Favourites.route) { Favourites(favouritesViewModel) }
         }
     }
