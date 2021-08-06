@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.*
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -22,6 +24,7 @@ class HomeViewModel @Inject constructor(
     val randomCocktailList = mutableStateListOf<Cocktail.Drink?>()
     val searchedCocktailList = mutableStateListOf<Cocktail.Drink?>()
     var cocktailAdditionalInfo by mutableStateOf<Cocktail.Drink?>(null)
+    val showAdditionalInfo = mutableStateOf(false)
     var searchTerm = mutableStateOf("")
     var searchError = mutableStateOf<ErrorType>(ErrorType.NoError)
     var generalError = mutableStateOf<ErrorType>(ErrorType.NoError)
@@ -129,6 +132,22 @@ class HomeViewModel @Inject constructor(
 
             replacement.isFavourite = true
             searchedCocktailList[cocktailIndex] = replacement
+        }
+    }
+
+    fun updateAdditionalInfo(cocktail: Cocktail.Drink?){
+        //on item click, close additional info if already open
+        if (cocktailAdditionalInfo == cocktail){
+            showAdditionalInfo.value = false
+            //delay setting to null so user doesn't see text change
+            Timer(false).schedule(100) {
+                //set to null so if condition can be false, otherwise re-clicking item will
+                //still be true, and the additional info wont show
+                cocktailAdditionalInfo = null
+            }
+        }else{
+            cocktailAdditionalInfo = cocktail
+            showAdditionalInfo.value = true
         }
     }
 

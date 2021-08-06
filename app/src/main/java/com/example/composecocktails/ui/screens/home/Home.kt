@@ -48,9 +48,9 @@ fun Home(
 
     val randomCocktails = viewModel.randomCocktailList
     val systemUiController = rememberSystemUiController()
-    val showDetails = rememberSaveable { (mutableStateOf(false)) }
+    val showDetails = viewModel.showAdditionalInfo
     val searchedCocktails = viewModel.searchedCocktailList
-    val info = viewModel.cocktailAdditionalInfo
+    val cocktailInfo = viewModel.cocktailAdditionalInfo
     val searchTerm = viewModel.searchTerm
     val errorType = when {
         viewModel.generalError.value != ErrorType.NoError -> {
@@ -96,8 +96,7 @@ fun Home(
 
                 item {
                     Carousel(randomCocktails) {
-                        viewModel.cocktailAdditionalInfo = it
-                        showDetails.value = true
+                        viewModel.updateAdditionalInfo(it)
                     }
                 }
 
@@ -130,8 +129,7 @@ fun Home(
                             CocktailListItem(
                                 cocktail = cocktail,
                                 showInfo = {
-                                    viewModel.cocktailAdditionalInfo = it
-                                    showDetails.value = true
+                                    viewModel.updateAdditionalInfo(it)
                                 },
                                 updateFavourite = { viewModel.updateFavourite(it) }
                             )
@@ -149,11 +147,11 @@ fun Home(
 
                 item {
                     DetailsWindow(
-                        cocktail = info,
+                        cocktail = cocktailInfo,
                         visibility = showDetails.value,
                         gradientBg = gradientDetailsSearch()
                     ) {
-                        showDetails.value = false
+                        viewModel.updateAdditionalInfo(cocktailInfo)
                     }
                 }
             }

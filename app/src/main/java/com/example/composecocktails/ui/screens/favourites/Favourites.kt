@@ -1,6 +1,5 @@
 package com.example.composecocktails.ui.screens.favourites
 
-
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -9,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,7 +33,8 @@ fun Favourites(
 
     val systemUiController = rememberSystemUiController()
     val favourites = viewModel.favouriteCocktails.observeAsState()
-    val showDetails = rememberSaveable { (mutableStateOf(false)) }
+    val showDetails = viewModel.showAdditionalInfo
+    val cocktailInfo = viewModel.cocktailAdditionalInfo
     val halfScreenHeight = LocalContext.current.resources.displayMetrics
         .run { heightPixels / density }.toInt() / 2
     val statusBarColour = MaterialTheme.colors.surface
@@ -48,7 +47,7 @@ fun Favourites(
         modifier = Modifier
             .fillMaxSize()
             .background(brush = gradientBackground())
-    ){
+    ) {
 
         LazyColumn(
             modifier = Modifier
@@ -60,8 +59,7 @@ fun Favourites(
                     CocktailListItem(
                         cocktail = cocktail,
                         showInfo = {
-                            viewModel.cocktailAdditionalInfo = it
-                            showDetails.value = true
+                            viewModel.updateAdditionalInfo(it)
                         },
                         updateFavourite = { viewModel.deleteCocktail(it.idDrink) }
                     )
@@ -69,11 +67,12 @@ fun Favourites(
             }
         }
 
-        Box(modifier = Modifier.align(Alignment.Center)){
+        Box(modifier = Modifier.align(Alignment.Center)) {
             ErrorBanner(
                 errorText = "No favourites to show",
-                visibility = favourites.value.isNullOrEmpty() ,
-                gradient = gradientBlueBackground())
+                visibility = favourites.value.isNullOrEmpty(),
+                gradient = gradientBlueBackground()
+            )
         }
 
         LazyColumn(
@@ -85,11 +84,11 @@ fun Favourites(
 
             item {
                 DetailsWindow(
-                    cocktail = viewModel.cocktailAdditionalInfo,
+                    cocktail = cocktailInfo,
                     visibility = showDetails.value,
                     gradientBg = gradientDetailsSearch()
                 ) {
-                    showDetails.value = false
+                    viewModel.updateAdditionalInfo(cocktailInfo)
                 }
             }
         }
