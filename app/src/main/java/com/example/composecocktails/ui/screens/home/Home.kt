@@ -21,10 +21,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.example.composecocktails.Screens
 import com.example.composecocktails.data.models.Cocktail
-import com.example.composecocktails.ui.screens.CocktailListItem
-import com.example.composecocktails.ui.screens.DetailsWindow
-import com.example.composecocktails.ui.screens.ErrorBanner
+import com.example.composecocktails.ui.screens.*
 import com.example.composecocktails.ui.theme.gradientBackground
 import com.example.composecocktails.ui.theme.gradientDetailsSearch
 import com.example.composecocktails.ui.theme.gradientHeader
@@ -41,15 +40,15 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @ExperimentalMaterialApi
 @Composable
 fun Home(
-    viewModel: HomeViewModel,
+    viewModel: SharedViewModel,
     listState: LazyListState
 ) {
 
     val randomCocktails = viewModel.randomCocktailList
     val systemUiController = rememberSystemUiController()
-    val showDetails = viewModel.showAdditionalInfo
+    val showDetails = viewModel.showAdditionalInfoHome
     val searchedCocktails = viewModel.searchedCocktailList
-    val cocktailInfo = viewModel.cocktailAdditionalInfo
+    val cocktailInfo = viewModel.cocktailAdditionalInfoHome
     val searchTerm = viewModel.searchTerm
     val errorType = when {
         viewModel.generalError.value != ErrorType.NoError -> {
@@ -96,7 +95,7 @@ fun Home(
 
                 item {
                     Carousel(randomCocktails) {
-                        viewModel.updateAdditionalInfo(it)
+                        viewModel.updateAdditionalInfo(it, Screens.Home.title)
                     }
                 }
 
@@ -129,7 +128,7 @@ fun Home(
                             CocktailListItem(
                                 cocktail = cocktail,
                                 showInfo = {
-                                    viewModel.updateAdditionalInfo(it)
+                                    viewModel.updateAdditionalInfo(it, Screens.Home.title)
                                 },
                                 updateFavourite = { viewModel.updateFavourite(it) }
                             )
@@ -151,7 +150,7 @@ fun Home(
                         visibility = showDetails.value,
                         gradientBg = gradientDetailsSearch()
                     ) {
-                        viewModel.updateAdditionalInfo(cocktailInfo)
+                        viewModel.updateAdditionalInfo(cocktailInfo, Screens.Home.title)
                     }
                 }
             }

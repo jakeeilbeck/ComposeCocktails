@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.composecocktails.Screens
 import com.example.composecocktails.ui.screens.CocktailListItem
 import com.example.composecocktails.ui.screens.DetailsWindow
 import com.example.composecocktails.ui.screens.ErrorBanner
+import com.example.composecocktails.ui.screens.SharedViewModel
 import com.example.composecocktails.ui.theme.gradientBackground
 import com.example.composecocktails.ui.theme.gradientBlueBackground
 import com.example.composecocktails.ui.theme.gradientDetailsSearch
@@ -29,14 +31,14 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @ExperimentalMaterialApi
 @Composable
 fun Favourites(
-    viewModel: FavouritesViewModel,
+    viewModel: SharedViewModel,
     listState: LazyListState
 ) {
 
     val systemUiController = rememberSystemUiController()
     val favourites = viewModel.favouriteCocktails.observeAsState()
-    val showDetails = viewModel.showAdditionalInfo
-    val cocktailInfo = viewModel.cocktailAdditionalInfo
+    val showDetails = viewModel.showAdditionalInfoFavourites
+    val cocktailInfo = viewModel.cocktailAdditionalInfoFavourites
     val halfScreenHeight = LocalContext.current.resources.displayMetrics
         .run { heightPixels / density }.toInt() / 2
     val statusBarColour = MaterialTheme.colors.surface
@@ -62,9 +64,9 @@ fun Favourites(
                     CocktailListItem(
                         cocktail = cocktail,
                         showInfo = {
-                            viewModel.updateAdditionalInfo(it)
+                            viewModel.updateAdditionalInfo(it, Screens.Favourites.title)
                         },
-                        updateFavourite = { viewModel.deleteCocktail(it.idDrink) }
+                        updateFavourite = { viewModel.updateFavourite(it) }
                     )
                 }
             }
@@ -91,7 +93,7 @@ fun Favourites(
                     visibility = showDetails.value,
                     gradientBg = gradientDetailsSearch()
                 ) {
-                    viewModel.updateAdditionalInfo(cocktailInfo)
+                    viewModel.updateAdditionalInfo(cocktailInfo, Screens.Favourites.title)
                 }
             }
         }

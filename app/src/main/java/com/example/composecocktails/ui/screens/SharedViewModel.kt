@@ -1,4 +1,4 @@
-package com.example.composecocktails.ui.screens.home
+package com.example.composecocktails.ui.screens
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -16,21 +16,25 @@ import javax.inject.Inject
 import kotlin.concurrent.schedule
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class SharedViewModel @Inject constructor(
     private val repository: Repository,
     private val utils: Utils
 ) : ViewModel() {
 
     val randomCocktailList = mutableStateListOf<Cocktail.Drink?>()
     val searchedCocktailList = mutableStateListOf<Cocktail.Drink?>()
-    var cocktailAdditionalInfo by mutableStateOf<Cocktail.Drink?>(null)
-    val showAdditionalInfo = mutableStateOf(false)
+    var cocktailAdditionalInfoHome by mutableStateOf<Cocktail.Drink?>(null)
+    val showAdditionalInfoHome = mutableStateOf(false)
     var searchTerm = mutableStateOf("")
     var searchError = mutableStateOf<ErrorType>(ErrorType.NoError)
     var generalError = mutableStateOf<ErrorType>(ErrorType.NoError)
     private var blankRandomCocktails = true
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
+
+    var cocktailAdditionalInfoFavourites by mutableStateOf<Cocktail.Drink?>(null)
+    val showAdditionalInfoFavourites = mutableStateOf(false)
+    var favouriteCocktails = repository.getAllFavourites()
 
     init {
         getRandomCocktails()
@@ -125,7 +129,11 @@ class HomeViewModel @Inject constructor(
             deleteFromFavourites(cocktail)
 
             replacement.isFavourite = false
-            searchedCocktailList[cocktailIndex] = replacement
+
+            if (cocktailIndex >= 0){
+                searchedCocktailList[cocktailIndex] = replacement
+            }
+
         }else{
 
             addToFavourites(cocktail)
@@ -135,19 +143,34 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updateAdditionalInfo(cocktail: Cocktail.Drink?){
-        //on item click, close additional info if already open
-        if (cocktailAdditionalInfo == cocktail){
-            showAdditionalInfo.value = false
-            //delay setting to null so user doesn't see text change
-            Timer(false).schedule(100) {
-                //set to null so if condition can be false, otherwise re-clicking item will
-                //still be true, and the additional info wont show
-                cocktailAdditionalInfo = null
+    fun updateAdditionalInfo(cocktail: Cocktail.Drink?, screen: String){
+        when(screen){
+            "Home" ->{
+                //on item click, close additional info if already open
+                if (cocktailAdditionalInfoHome == cocktail){
+                    showAdditionalInfoHome.value = false
+                    //delay setting to null so user doesn't see text change
+                    Timer(false).schedule(100) {
+                        //set to null so if condition can be false, otherwise re-clicking item will
+                        //still be true, and the additional info wont show
+                        cocktailAdditionalInfoHome = null
+                    }
+                }else{
+                    cocktailAdditionalInfoHome = cocktail
+                    showAdditionalInfoHome.value = true
+                }
             }
-        }else{
-            cocktailAdditionalInfo = cocktail
-            showAdditionalInfo.value = true
+            "Favourites" ->{
+                if (cocktailAdditionalInfoFavourites == cocktail){
+                    showAdditionalInfoFavourites.value = false
+                    Timer(false).schedule(100) {
+                        cocktailAdditionalInfoFavourites = null
+                    }
+                }else{
+                    cocktailAdditionalInfoFavourites = cocktail
+                    showAdditionalInfoFavourites.value = true
+                }
+            }
         }
     }
 

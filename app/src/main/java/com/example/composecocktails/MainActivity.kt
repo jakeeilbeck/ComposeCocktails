@@ -22,11 +22,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.composecocktails.ui.screens.SharedViewModel
 import com.example.composecocktails.ui.screens.favourites.Favourites
-import com.example.composecocktails.ui.screens.favourites.FavouritesViewModel
 import com.example.composecocktails.ui.screens.home.Home
 import com.example.composecocktails.ui.theme.*
-import com.example.composecocktails.ui.screens.home.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,15 +38,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val homeViewModel by viewModels<HomeViewModel>()
-        val favouritesViewModel by viewModels<FavouritesViewModel>()
+        val sharedViewModel by viewModels<SharedViewModel>()
 
         setContent {
             ComposeCocktailsTheme {
                 Surface {
                     BottomNav(
-                        homeViewModel = homeViewModel,
-                        favouritesViewModel = favouritesViewModel
+                        sharedViewModel = sharedViewModel
                     )
                 }
             }
@@ -61,7 +58,7 @@ class MainActivity : ComponentActivity() {
 @ExperimentalComposeUiApi
 @ExperimentalAnimationApi
 @Composable
-fun BottomNav(homeViewModel: HomeViewModel, favouritesViewModel: FavouritesViewModel) {
+fun BottomNav(sharedViewModel: SharedViewModel) {
     val items = listOf(
         Screens.Home,
         Screens.Favourites
@@ -109,8 +106,8 @@ fun BottomNav(homeViewModel: HomeViewModel, favouritesViewModel: FavouritesViewM
             startDestination = Screens.Home.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(Screens.Home.route) { Home(homeViewModel, homeListState) }
-            composable(Screens.Favourites.route) { Favourites(favouritesViewModel, favouritesListState) }
+            composable(Screens.Home.route) { Home(sharedViewModel, homeListState) }
+            composable(Screens.Favourites.route) { Favourites(sharedViewModel, favouritesListState) }
         }
     }
 }
