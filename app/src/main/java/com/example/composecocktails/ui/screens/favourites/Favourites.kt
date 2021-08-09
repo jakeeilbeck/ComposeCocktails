@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -28,7 +29,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @ExperimentalMaterialApi
 @Composable
 fun Favourites(
-    viewModel: FavouritesViewModel
+    viewModel: FavouritesViewModel,
+    listState: LazyListState
 ) {
 
     val systemUiController = rememberSystemUiController()
@@ -51,7 +53,8 @@ fun Favourites(
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize(),
+            state = listState
         ) {
 
             if (!favourites.value.isNullOrEmpty()) {

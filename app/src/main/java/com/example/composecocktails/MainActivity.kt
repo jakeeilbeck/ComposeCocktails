@@ -67,7 +67,8 @@ fun BottomNav(homeViewModel: HomeViewModel, favouritesViewModel: FavouritesViewM
         Screens.Favourites
     )
     val navController = rememberNavController()
-    val listState = rememberLazyListState()
+    val homeListState = rememberLazyListState()
+    val favouritesListState = rememberLazyListState()
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -108,8 +109,8 @@ fun BottomNav(homeViewModel: HomeViewModel, favouritesViewModel: FavouritesViewM
             startDestination = Screens.Home.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(Screens.Home.route) { Home(homeViewModel, listState) }
-            composable(Screens.Favourites.route) { Favourites(favouritesViewModel) }
+            composable(Screens.Home.route) { Home(homeViewModel, homeListState) }
+            composable(Screens.Favourites.route) { Favourites(favouritesViewModel, favouritesListState) }
         }
     }
 }
