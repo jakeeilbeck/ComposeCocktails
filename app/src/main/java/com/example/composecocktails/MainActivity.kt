@@ -18,14 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.composecocktails.ui.screens.SharedViewModel
 import com.example.composecocktails.ui.screens.favourites.Favourites
 import com.example.composecocktails.ui.screens.home.Home
 import com.example.composecocktails.ui.theme.*
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -63,7 +63,7 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
         Screens.Home,
         Screens.Favourites
     )
-    val navController = rememberNavController()
+    val navController = rememberAnimatedNavController()
     val homeListState = rememberLazyListState()
     val favouritesListState = rememberLazyListState()
     Scaffold(
@@ -101,13 +101,27 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
             }
         }
     ) { innerPadding ->
-        NavHost(
+        AnimatedNavHost(
             navController,
             startDestination = Screens.Home.route,
             Modifier.padding(innerPadding)
         ) {
-            composable(Screens.Home.route) { Home(sharedViewModel, homeListState) }
-            composable(Screens.Favourites.route) { Favourites(sharedViewModel, favouritesListState) }
+            composable(
+                Screens.Home.route,
+                enterTransition = {_, _ ->
+                    slideInHorizontally()
+                }
+            ) {
+                Home(sharedViewModel, homeListState)
+            }
+            composable(
+                Screens.Favourites.route,
+                enterTransition = {_, _ ->
+                    slideInHorizontally(initialOffsetX = {1000})
+                }
+            ) {
+                Favourites(sharedViewModel, favouritesListState)
+            }
         }
     }
 }

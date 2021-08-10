@@ -40,7 +40,6 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-        kotlinCompilerVersion '1.5.10'
     }
 }
 
@@ -83,7 +82,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-placeholder-material:$accompanist_version"
 
     //System UI Controller (to change status bar colour)
-    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.15.0"
 
     //Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
@@ -100,5 +99,9 @@ dependencies {
     //Compose navigation
     implementation "androidx.navigation:navigation-compose:2.4.0-alpha06"
 
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.5.20"
+    //Accompanist navigation for animations
+    implementation "com.google.accompanist:accompanist-navigation-animation:0.16.1"
+
+
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.5.21"
 }
