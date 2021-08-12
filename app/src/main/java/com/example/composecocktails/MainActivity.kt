@@ -110,6 +110,9 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
                 Screens.Home.route,
                 enterTransition = {_, _ ->
                     slideInHorizontally()
+                },
+                exitTransition = {_, _ ->
+                    slideOutHorizontally(targetOffsetX = { -1000 })
                 }
             ) {
                 Home(sharedViewModel, homeListState)
@@ -117,7 +120,10 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
             composable(
                 Screens.Favourites.route,
                 enterTransition = {_, _ ->
-                    slideInHorizontally(initialOffsetX = {1000})
+                    slideInHorizontally(initialOffsetX = { 1000 })
+                },
+                exitTransition = {_, _ ->
+                    slideOutHorizontally(targetOffsetX = { 1000 })
                 }
             ) {
                 Favourites(sharedViewModel, favouritesListState)
