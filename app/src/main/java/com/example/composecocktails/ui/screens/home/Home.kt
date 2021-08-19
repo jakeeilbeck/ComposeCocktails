@@ -8,7 +8,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -50,6 +49,7 @@ fun Home(
     val searchedCocktails = viewModel.searchedCocktailList
     val cocktailInfo = viewModel.cocktailAdditionalInfoHome
     val searchTerm = viewModel.searchTerm
+    val errorMessageSearchTerm = viewModel.errorMessageSearchTerm.collectAsState().value
     val errorType = when {
         viewModel.generalError.value != ErrorType.NoError -> {
             viewModel.generalError.value
@@ -105,6 +105,7 @@ fun Home(
                         searchCocktail = {
                             viewModel.searchCocktail(it)
                         },
+                        searchQuery = searchTerm
                     )
                 }
 
@@ -113,7 +114,7 @@ fun Home(
                         errorText = errorType.errorMessage,
                         //show the not found cocktail name in the error message
                         searchTerm = if (errorType == ErrorType.NoResult) {
-                            searchTerm.value
+                            errorMessageSearchTerm
                         } else {
                             //otherwise don't append anything to the error message
                             ""
@@ -253,8 +254,8 @@ fun SearchBar(
     gradientBg: Brush,
     modifier: Modifier = Modifier,
     searchCocktail: (String) -> Unit,
+    searchQuery: MutableState<String>
 ) {
-    val searchQuery = rememberSaveable { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 

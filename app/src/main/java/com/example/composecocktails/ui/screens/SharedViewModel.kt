@@ -7,8 +7,7 @@ import com.example.composecocktails.data.Repository
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.util.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.*
@@ -26,6 +25,7 @@ class SharedViewModel @Inject constructor(
     var cocktailAdditionalInfoHome by mutableStateOf<Cocktail.Drink?>(null)
     val showAdditionalInfoHome = mutableStateOf(false)
     var searchTerm = mutableStateOf("")
+    var errorMessageSearchTerm = MutableStateFlow("")
     var searchError = mutableStateOf<ErrorType>(ErrorType.NoError)
     var generalError = mutableStateOf<ErrorType>(ErrorType.NoError)
     private var blankRandomCocktails = true
@@ -84,6 +84,7 @@ class SharedViewModel @Inject constructor(
 
                     if (searchedCocktails == null) {
                         searchTerm.value = cocktailName
+                        errorMessageSearchTerm.emit(cocktailName)
                         searchError.value = ErrorType.NoResult
                     } else {
                         searchedCocktailList.clear()
