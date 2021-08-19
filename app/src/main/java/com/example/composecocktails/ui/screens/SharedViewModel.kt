@@ -62,6 +62,7 @@ class SharedViewModel @Inject constructor(
                 } catch (e: Exception) {
 
                     generalError.value = ErrorType.OtherError
+                    _isRefreshing.emit(false)
                 }
             }
         } else {
