@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.example.composecocktails.data.models.Cocktail
@@ -130,7 +131,7 @@ fun ErrorBanner(
         .current
         .resources
         .displayMetrics
-        .run { widthPixels }.toInt()
+        .widthPixels
 
     AnimatedVisibility(
         visible = visibility,
@@ -151,18 +152,15 @@ fun ErrorBanner(
                 text = errorText,
                 style = MaterialTheme.typography.subtitle1,
                 modifier = modifier
-                    .padding(
-                        start = 0.dp,
-                        top = 8.dp,
-                        end = 0.dp,
-                        bottom = 8.dp
-                    )
+                    .padding(8.dp)
                     .background(Color.Transparent)
             )
             Text(
                 text = searchTerm,
                 fontStyle = FontStyle.Italic,
                 style = MaterialTheme.typography.subtitle1,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = modifier
                     .padding(
                         start = 0.dp,
