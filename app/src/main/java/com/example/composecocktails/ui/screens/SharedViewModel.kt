@@ -24,6 +24,7 @@ class SharedViewModel @Inject constructor(
     val searchedCocktailList = mutableStateListOf<Cocktail.Drink?>()
     var cocktailAdditionalInfoHome by mutableStateOf<Cocktail.Drink?>(null)
     val showAdditionalInfoHome = mutableStateOf(false)
+    var searchOption = "Cocktail"
     var searchTerm = mutableStateOf("")
     var errorMessageSearchTerm = MutableStateFlow("")
     var searchError = mutableStateOf<ErrorType>(ErrorType.NoError)
@@ -81,7 +82,12 @@ class SharedViewModel @Inject constructor(
             viewModelScope.launch {
                 try {
 
-                    val searchedCocktails = repository.searchCocktail(cocktailName)
+                    var searchedCocktails: List<Cocktail.Drink?>? = null
+
+                    when(searchOption){
+                        "Cocktail" -> searchedCocktails = repository.searchCocktailByName(cocktailName)
+                        "Ingredient" -> searchedCocktails = repository.searchCocktailByIngredient(cocktailName)
+                    }
 
                     if (searchedCocktails == null) {
                         searchTerm.value = cocktailName

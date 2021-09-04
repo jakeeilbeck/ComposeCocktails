@@ -14,8 +14,12 @@ class Repository @Inject constructor(private val api: Api, private val favourite
         return api.getRandomCocktail().drinks
     }
 
-    suspend fun searchCocktail(cocktailName: String): List<Cocktail.Drink?>? {
-        return api.searchCocktail(cocktailName).drinks
+    suspend fun searchCocktailByName(cocktailName: String): List<Cocktail.Drink?>? {
+        return api.searchCocktailByName(cocktailName).drinks
+    }
+
+    suspend fun searchCocktailByIngredient(ingredient: String): List<Cocktail.Drink?>? {
+        return api.searchCocktailByIngredient(ingredient).drinks
     }
 
     suspend fun insertCocktail(cocktail: Cocktail.Drink){

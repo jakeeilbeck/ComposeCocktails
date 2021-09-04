@@ -9,7 +9,10 @@ interface Api {
     suspend fun getRandomCocktail(): Cocktail
 
     @GET("search.php?")
-    suspend fun searchCocktail(@Query("s") cocktailName: String): Cocktail
+    suspend fun searchCocktailByName(@Query("s") cocktailName: String): Cocktail
+
+    @GET("filter.php?")
+    suspend fun searchCocktailByIngredient(@Query("i") ingredient: String): Cocktail
 
     companion object {
         const val BASE_URL = "https://thecocktaildb.com/api/json/v1/1/"

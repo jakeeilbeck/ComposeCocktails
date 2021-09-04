@@ -7,6 +7,9 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -16,9 +19,11 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.composecocktails.Screens
 import com.example.composecocktails.data.models.Cocktail
@@ -102,6 +107,9 @@ fun Home(
                 stickyHeader {
                     SearchBar(
                         gradientBg = gradientDetailsSearch(),
+                        searchOption = {
+                            viewModel.searchOption = it
+                        },
                         searchCocktail = {
                             viewModel.searchCocktail(it)
                         },
@@ -253,6 +261,7 @@ fun CarouselItem(
 fun SearchBar(
     gradientBg: Brush,
     modifier: Modifier = Modifier,
+    searchOption: (String) -> Unit,
     searchCocktail: (String) -> Unit,
     searchQuery: MutableState<String>
 ) {
@@ -268,7 +277,7 @@ fun SearchBar(
         TextField(
             value = searchQuery.value,
             onValueChange = { searchQuery.value = it },
-            modifier.weight(5f),
+            modifier.fillMaxWidth(),
             colors = TextFieldDefaults.textFieldColors(
                 textColor = Color.White,
                 unfocusedLabelColor = Color.White,
@@ -279,10 +288,12 @@ fun SearchBar(
             ),
             label = {
                 Text(
-                    text = "Search cocktail...",
-                    style = MaterialTheme.typography.subtitle2
+                    text = "Search cocktail or ingredient...",
+                    style = MaterialTheme.typography.subtitle2,
+                    fontStyle = FontStyle.Italic
                 )
             },
+            trailingIcon = { SearchOptions{searchOption(it)} },
             maxLines = 1,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
@@ -293,4 +304,74 @@ fun SearchBar(
             }),
         )
     }
+}
+
+@Composable
+fun SearchOptions(
+    searchOption: (String) -> Unit,
+){
+    var expanded by remember { mutableStateOf(false) }
+    var searchType by remember { mutableStateOf("Cocktail")}
+    val icon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .background(Color.Transparent)
+            .clickable { expanded = true }
+            .fillMaxHeight()
+            .height(56.dp)
+    ) {
+        Text(
+            text = searchType,
+            modifier = Modifier
+                .padding(4.dp)
+                .align(Alignment.CenterVertically)
+        )
+
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+        )
+    }
+
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier
+            .background(gradientHeader())
+            .width(120.dp)
+    ) {
+
+        DropdownMenuItem(
+            onClick = {
+                searchType = "Cocktail"
+                expanded = false
+                searchOption(searchType)
+            },
+        ) {
+            MenuItemText("Cocktail")
+        }
+
+        DropdownMenuItem(
+            onClick = {
+                searchType = "Ingredient"
+                expanded = false
+                searchOption(searchType)
+            },
+        ) {
+            MenuItemText("Ingredient")
+        }
+    }
+}
+
+@Composable
+fun MenuItemText(itemText: String){
+    Text(
+        text = itemText,
+        fontSize = 16.sp,
+        color = LocalContentColor.current.copy(alpha = 0.75f)
+    )
 }

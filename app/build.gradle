@@ -97,11 +97,13 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 
     //Compose navigation
-    implementation "androidx.navigation:navigation-compose:2.4.0-alpha06"
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha08"
 
     //Accompanist navigation for animations
     implementation "com.google.accompanist:accompanist-navigation-animation:0.16.1"
 
+    //Icons
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.5.21"
 }
