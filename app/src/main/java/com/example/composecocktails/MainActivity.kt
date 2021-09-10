@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -77,11 +78,21 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
                             Icon(
                                 imageVector = screen.icon,
                                 contentDescription = "",
+                                tint = screen.iconColour,
                             )
                         },
                         label = { Text(screen.title) },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
+                            when(screen.route){
+                                "favourites" -> {
+                                    Screens.Favourites.iconColour = Color.Red
+                                }
+                                "home" -> {
+                                    Screens.Favourites.iconColour = Color.LightGray
+                                }
+                            }
+
                             navController.navigate(screen.route) {
                                 // Pop up to the start destination of the graph to
                                 // avoid building up a large stack of destinations
@@ -95,6 +106,7 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
                                 // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
+
                         }
                     )
                 }
@@ -132,7 +144,7 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
     }
 }
 
-sealed class Screens(val icon: ImageVector, val title: String, val route: String) {
-    object Home : Screens(Icons.Filled.Home, "Home", "home")
-    object Favourites : Screens(Icons.Filled.Favorite, "Favourites", "favourites")
+sealed class Screens(val icon: ImageVector, var iconColour: Color, val title: String, val route: String) {
+    object Home : Screens(Icons.Filled.Home, Color.LightGray,"Home", "home")
+    object Favourites : Screens(Icons.Filled.Favorite, Color.LightGray,"Favourites", "favourites")
 }
