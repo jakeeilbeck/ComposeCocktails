@@ -107,9 +107,10 @@ fun Home(
                 stickyHeader {
                     SearchBar(
                         gradientBg = gradientDetailsSearch(),
-                        searchOption = {
-                            viewModel.searchOption = it
+                        setSearchOption = {
+                            viewModel.searchOption.value = it
                         },
+                        searchOption = viewModel.searchOption,
                         searchCocktail = {
                             viewModel.searchCocktail(it)
                         },
@@ -261,7 +262,8 @@ fun CarouselItem(
 fun SearchBar(
     gradientBg: Brush,
     modifier: Modifier = Modifier,
-    searchOption: (String) -> Unit,
+    setSearchOption: (String) -> Unit,
+    searchOption: MutableState<String>,
     searchCocktail: (String) -> Unit,
     searchQuery: MutableState<String>
 ) {
@@ -293,7 +295,13 @@ fun SearchBar(
                     fontStyle = FontStyle.Italic
                 )
             },
-            trailingIcon = { SearchOptions{searchOption(it)} },
+            trailingIcon = { SearchOptions(
+                setSearchOption = {
+                    setSearchOption(it)
+                },
+                searchType = searchOption
+                )
+             },
             maxLines = 1,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
@@ -308,10 +316,10 @@ fun SearchBar(
 
 @Composable
 fun SearchOptions(
-    searchOption: (String) -> Unit,
+    setSearchOption: (String) -> Unit,
+    searchType: MutableState<String> //= mutableStateOf("Cocktail")
 ){
     var expanded by remember { mutableStateOf(false) }
-    var searchType by remember { mutableStateOf("Cocktail")}
     val icon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
 
     Row(
@@ -323,7 +331,7 @@ fun SearchOptions(
             .height(56.dp)
     ) {
         Text(
-            text = searchType,
+            text = searchType.value,
             modifier = Modifier
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
@@ -347,9 +355,9 @@ fun SearchOptions(
 
         DropdownMenuItem(
             onClick = {
-                searchType = "Cocktail"
+                searchType.value = "Cocktail"
                 expanded = false
-                searchOption(searchType)
+                setSearchOption(searchType.value)
             },
         ) {
             MenuItemText("Cocktail")
@@ -357,9 +365,9 @@ fun SearchOptions(
 
         DropdownMenuItem(
             onClick = {
-                searchType = "Ingredient"
+                searchType.value = "Ingredient"
                 expanded = false
-                searchOption(searchType)
+                setSearchOption(searchType.value)
             },
         ) {
             MenuItemText("Ingredient")

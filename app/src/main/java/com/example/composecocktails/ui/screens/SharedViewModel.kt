@@ -24,7 +24,7 @@ class SharedViewModel @Inject constructor(
     val searchedCocktailList = mutableStateListOf<Cocktail.Drink?>()
     var cocktailAdditionalInfoHome by mutableStateOf<Cocktail.Drink?>(null)
     val showAdditionalInfoHome = mutableStateOf(false)
-    var searchOption = "Cocktail"
+    var searchOption = mutableStateOf("Cocktail")
     var searchTerm = mutableStateOf("")
     var errorMessageSearchTerm = MutableStateFlow("")
     var searchError = mutableStateOf<ErrorType>(ErrorType.NoError)
@@ -51,7 +51,7 @@ class SharedViewModel @Inject constructor(
                     if (randomCocktailList.isEmpty() || isRefreshing.value) {
                         randomCocktailList.clear()
                         for (i in 1..10) {
-                            val randomCocktail = repository.getRandomCocktail()
+                            val randomCocktail = repository.searchRandomCocktail()
                             randomCocktailList.add(randomCocktail?.get(0))
                         }
                     }
@@ -84,7 +84,7 @@ class SharedViewModel @Inject constructor(
 
                     var searchedCocktails: List<Cocktail.Drink?>? = null
 
-                    when(searchOption){
+                    when (searchOption.value) {
                         "Cocktail" -> searchedCocktails = repository.searchCocktailByName(cocktailName)
                         "Ingredient" -> searchedCocktails = repository.searchCocktailByIngredient(cocktailName)
                     }
@@ -121,7 +121,7 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun updateFavourite(cocktail: Cocktail.Drink){
+    fun updateFavourite(cocktail: Cocktail.Drink) {
         /*
         https://stackoverflow.com/questions/66448722
         Replace clicked cocktail item with isFavourite reassigned instead of just reassigning
@@ -129,20 +129,26 @@ class SharedViewModel @Inject constructor(
         happen to list item
         */
 
-        val cocktailIndex = searchedCocktailList.indexOf(cocktail)
+        //finding the index based on ID rather than object as finding by object caused the following
+        // bug: favourite icon didn't update in Home when you searched by ingredient, opened the additional
+        // info from Favourites, then deleted it from Favourites
+        val cocktailIndex = searchedCocktailList.indexOf(
+            searchedCocktailList.find {
+            it?.idDrink == cocktail.idDrink
+        })
         val replacement = cocktail.copy()
 
-        if (checkIsFavourite(cocktail.idDrink)){
+        if (checkIsFavourite(cocktail.idDrink)) {
 
             deleteFromFavourites(cocktail)
 
             replacement.isFavourite = false
 
-            if (cocktailIndex >= 0){
+            if (cocktailIndex >= 0) {
                 searchedCocktailList[cocktailIndex] = replacement
             }
 
-        }else{
+        } else {
 
             addToFavourites(cocktail)
 
@@ -151,11 +157,31 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun updateAdditionalInfo(cocktail: Cocktail.Drink?, screen: String){
-        when(screen){
-            "Home" ->{
+    fun updateAdditionalInfo(cocktail: Cocktail.Drink?, screen: String) {
+        var cocktailInfo = cocktail
+
+        //When searching by ingredient additional info isn't included, so we have to make an api call
+        // to fetch the additional info
+        if (cocktailInfo?.strInstructions == "") {
+            if (utils.isOnlineCheck()) {
+                try {
+                    runBlocking {
+                        cocktailInfo = repository.searchCocktailById(cocktailInfo!!.idDrink)?.last()
+                    }
+                    generalError.value = ErrorType.NoError
+                } catch (e: Exception) {
+                    generalError.value = ErrorType.OtherError
+                }
+            } else {
+                //no internet connection
+                generalError.value = ErrorType.NoConnection
+            }
+        }
+
+        when (screen) {
+            "Home" -> {
                 //on item click, close additional info if already open
-                if (cocktailAdditionalInfoHome == cocktail){
+                if (cocktailAdditionalInfoHome == cocktailInfo) {
                     showAdditionalInfoHome.value = false
                     //delay setting to null so user doesn't see text change
                     Timer(false).schedule(100) {
@@ -163,20 +189,30 @@ class SharedViewModel @Inject constructor(
                         //still be true, and the additional info wont show
                         cocktailAdditionalInfoHome = null
                     }
-                }else{
-                    cocktailAdditionalInfoHome = cocktail
+                } else {
+                    cocktailAdditionalInfoHome = cocktailInfo
                     showAdditionalInfoHome.value = true
                 }
             }
-            "Favourites" ->{
-                if (cocktailAdditionalInfoFavourites == cocktail){
+            "Favourites" -> {
+                if (cocktailAdditionalInfoFavourites == cocktailInfo) {
                     showAdditionalInfoFavourites.value = false
                     Timer(false).schedule(100) {
                         cocktailAdditionalInfoFavourites = null
                     }
-                }else{
-                    cocktailAdditionalInfoFavourites = cocktail
+                } else {
+                    cocktailAdditionalInfoFavourites = cocktailInfo
                     showAdditionalInfoFavourites.value = true
+
+                    //search for and add additional info for edge case where user searches for
+                    // ingredients, disconnects, then adds a favourite.
+                    if (cocktail?.strInstructions == "") {
+                        viewModelScope.launch {
+                            repository.updateCocktail(cocktailInfo!!.apply {
+                                isFavourite = true
+                            })
+                        }
+                    }
                 }
             }
         }
@@ -187,18 +223,33 @@ class SharedViewModel @Inject constructor(
             repository.checkFavourite(cocktailId) == 1
         }
 
-    private fun addToFavourites(cocktail: Cocktail.Drink){
+    private fun addToFavourites(cocktail: Cocktail.Drink) {
+        var cocktailInfo = cocktail
+
+        //searching by ingredient doesn't include additional info, so add additional info to the
+        // object before saving to Room
+        if (cocktail.strInstructions == "") {
+            if (utils.isOnlineCheck()){
+                viewModelScope.launch {
+                    cocktailInfo = repository.searchCocktailById(cocktailInfo.idDrink)?.last()!!
+                }
+            }else{
+                //no internet connection
+                generalError.value = ErrorType.NoConnection
+            }
+        }
+
         viewModelScope.launch {
             repository.insertCocktail(
-                cocktail.apply { isFavourite = true }
+                cocktailInfo.apply { isFavourite = true }
             )
         }
     }
 
-    private fun deleteFromFavourites(cocktail: Cocktail.Drink){
+    private fun deleteFromFavourites(cocktail: Cocktail.Drink) {
         viewModelScope.launch {
-            repository.deleteCocktail(
-                cocktail
+            repository.deleteById(
+                cocktail.idDrink
             )
         }
     }

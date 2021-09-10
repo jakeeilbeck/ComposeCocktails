@@ -10,8 +10,8 @@ import javax.inject.Singleton
 @Singleton
 class Repository @Inject constructor(private val api: Api, private val favouritesDao: FavouritesDAO) {
 
-    suspend fun getRandomCocktail(): List<Cocktail.Drink?>?{
-        return api.getRandomCocktail().drinks
+    suspend fun searchRandomCocktail(): List<Cocktail.Drink?>?{
+        return api.searchRandomCocktail().drinks
     }
 
     suspend fun searchCocktailByName(cocktailName: String): List<Cocktail.Drink?>? {
@@ -22,16 +22,28 @@ class Repository @Inject constructor(private val api: Api, private val favourite
         return api.searchCocktailByIngredient(ingredient).drinks
     }
 
+    suspend fun searchCocktailById(Id: String): List<Cocktail.Drink?>? {
+        return api.searchCocktailById(Id).drinks
+    }
+
     suspend fun insertCocktail(cocktail: Cocktail.Drink){
         favouritesDao.insert(cocktail)
+    }
+
+    suspend fun updateCocktail(cocktail: Cocktail.Drink){
+        favouritesDao.update(cocktail)
+    }
+
+    suspend fun getCocktailById(cocktailId: String): Cocktail.Drink{
+        return favouritesDao.getById(cocktailId)
     }
 
     suspend fun deleteCocktail(cocktail: Cocktail.Drink){
         favouritesDao.delete(cocktail)
     }
 
-    suspend fun deleteId(cocktailId: String){
-        favouritesDao.deleteId(cocktailId)
+    suspend fun deleteById(cocktailId: String){
+        favouritesDao.deleteById(cocktailId)
     }
 
     suspend fun checkFavourite(cocktailId: String): Int{
