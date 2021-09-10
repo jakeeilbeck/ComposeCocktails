@@ -317,7 +317,7 @@ fun SearchBar(
 @Composable
 fun SearchOptions(
     setSearchOption: (String) -> Unit,
-    searchType: MutableState<String> //= mutableStateOf("Cocktail")
+    searchType: MutableState<String>
 ){
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
