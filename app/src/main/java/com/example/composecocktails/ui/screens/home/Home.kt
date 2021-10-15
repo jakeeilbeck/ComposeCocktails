@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.example.composecocktails.Screens
 import com.example.composecocktails.data.models.Cocktail
@@ -38,6 +39,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+@ExperimentalCoilApi
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi
@@ -190,6 +192,7 @@ fun Header(
     }
 }
 
+@ExperimentalCoilApi
 @ExperimentalMaterialApi
 @Composable
 fun Carousel(
@@ -210,6 +213,7 @@ fun Carousel(
     }
 }
 
+@ExperimentalCoilApi
 @ExperimentalMaterialApi
 @Composable
 fun CarouselItem(
@@ -257,6 +261,7 @@ fun CarouselItem(
     }
 }
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @Composable
 fun SearchBar(
@@ -280,6 +285,7 @@ fun SearchBar(
             value = searchQuery.value,
             onValueChange = { searchQuery.value = it },
             modifier.fillMaxWidth(),
+            textStyle = MaterialTheme.typography.subtitle1,
             colors = TextFieldDefaults.textFieldColors(
                 textColor = Color.White,
                 unfocusedLabelColor = Color.White,
@@ -314,6 +320,7 @@ fun SearchBar(
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun SearchOptions(
     setSearchOption: (String) -> Unit,
@@ -330,12 +337,14 @@ fun SearchOptions(
             .fillMaxHeight()
             .height(56.dp)
     ) {
-        Text(
-            text = searchType.value,
+        AnimatedContent(
+            targetState = searchType.value,
             modifier = Modifier
                 .padding(4.dp)
                 .align(Alignment.CenterVertically)
-        )
+        ) {
+            Text(text = it)
+        }
 
         Icon(
             imageVector = icon,

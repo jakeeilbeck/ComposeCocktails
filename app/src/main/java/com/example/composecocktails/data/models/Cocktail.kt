@@ -18,158 +18,160 @@ data class Cocktail(
         @NonNull
         @PrimaryKey
         @Json(name = "idDrink")
-        val idDrink: String,
+        var idDrink: String,
         @ColumnInfo
         @Json(name = "strDrink")
-        val strDrink: String? = "",
+        var strDrink: String? = "",
         @ColumnInfo
         @Json(name = "strDrinkAlternate")
-        val strDrinkAlternate: String? = "",
+        var strDrinkAlternate: String? = "",
         @ColumnInfo
         @Json(name = "strTags")
-        val strTags: String? = "",
+        var strTags: String? = "",
         @ColumnInfo
         @Json(name = "strVideo")
-        val strVideo: String? = "",
+        var strVideo: String? = "",
         @ColumnInfo
         @Json(name = "strCategory")
-        val strCategory: String? = "",
+        var strCategory: String? = "",
         @ColumnInfo
         @Json(name = "strIBA")
-        val strIBA: String? = "",
+        var strIBA: String? = "",
         @ColumnInfo
         @Json(name = "strAlcoholic")
-        val strAlcoholic: String? = "",
+        var strAlcoholic: String? = "",
         @ColumnInfo
         @Json(name = "strGlass")
-        val strGlass: String? = "",
+        var strGlass: String? = "",
         @ColumnInfo
         @Json(name = "strInstructions")
-        val strInstructions: String? = "",
+        var strInstructions: String? = "",
         @ColumnInfo
         @Json(name = "strInstructionsES")
-        val strInstructionsES: String? = "",
+        var strInstructionsES: String? = "",
         @ColumnInfo
         @Json(name = "strInstructionsDE")
-        val strInstructionsDE: String? = "",
+        var strInstructionsDE: String? = "",
         @ColumnInfo
         @Json(name = "strInstructionsFR")
-        val strInstructionsFR: String? = "",
+        var strInstructionsFR: String? = "",
         @ColumnInfo
         @Json(name = "strInstructionsIT")
-        val strInstructionsIT: String? = "",
+        var strInstructionsIT: String? = "",
         @ColumnInfo
         @Json(name = "strInstructionsZH-HANS")
-        val strInstructionsZHHANS: String? = "",
+        var strInstructionsZHHANS: String? = "",
         @ColumnInfo
         @Json(name = "strInstructionsZH-HANT")
-        val strInstructionsZHHANT: String? = "",
+        var strInstructionsZHHANT: String? = "",
         @ColumnInfo
         @Json(name = "strDrinkThumb")
-        val strDrinkThumb: String? = "",
+        var strDrinkThumb: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient1")
-        val strIngredient1: String? = "",
+        var strIngredient1: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient2")
-        val strIngredient2: String? = "",
+        var strIngredient2: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient3")
-        val strIngredient3: String? = "",
+        var strIngredient3: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient4")
-        val strIngredient4: String? = "",
+        var strIngredient4: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient5")
-        val strIngredient5: String? = "",
+        var strIngredient5: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient6")
-        val strIngredient6: String? = "",
+        var strIngredient6: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient7")
-        val strIngredient7: String? = "",
+        var strIngredient7: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient8")
-        val strIngredient8: String? = "",
+        var strIngredient8: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient9")
-        val strIngredient9: String? = "",
+        var strIngredient9: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient10")
-        val strIngredient10: String? = "",
+        var strIngredient10: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient11")
-        val strIngredient11: String? = "",
+        var strIngredient11: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient12")
-        val strIngredient12: String? = "",
+        var strIngredient12: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient13")
-        val strIngredient13: String? = "",
+        var strIngredient13: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient14")
-        val strIngredient14: String? = "",
+        var strIngredient14: String? = "",
         @ColumnInfo
         @Json(name = "strIngredient15")
-        val strIngredient15: String? = "",
+        var strIngredient15: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure1")
-        val strMeasure1: String? = "",
+        var strMeasure1: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure2")
-        val strMeasure2: String? = "",
+        var strMeasure2: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure3")
-        val strMeasure3: String? = "",
+        var strMeasure3: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure4")
-        val strMeasure4: String? = "",
+        var strMeasure4: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure5")
-        val strMeasure5: String? = "",
+        var strMeasure5: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure6")
-        val strMeasure6: String? = "",
+        var strMeasure6: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure7")
-        val strMeasure7: String? = "",
+        var strMeasure7: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure8")
-        val strMeasure8: String? = "",
+        var strMeasure8: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure9")
-        val strMeasure9: String? = "",
+        var strMeasure9: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure10")
-        val strMeasure10: String? = "",
+        var strMeasure10: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure11")
-        val strMeasure11: String? = "",
+        var strMeasure11: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure12")
-        val strMeasure12: String? = "",
+        var strMeasure12: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure13")
-        val strMeasure13: String? = "",
+        var strMeasure13: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure14")
-        val strMeasure14: String? = "",
+        var strMeasure14: String? = "",
         @ColumnInfo
         @Json(name = "strMeasure15")
-        val strMeasure15: String? = "",
+        var strMeasure15: String? = "",
         @ColumnInfo
         @Json(name = "strImageSource")
-        val strImageSource: String? = "",
+        var strImageSource: String? = "",
         @ColumnInfo
         @Json(name = "strImageAttribution")
-        val strImageAttribution: String? = "",
+        var strImageAttribution: String? = "",
         @ColumnInfo
         @Json(name = "strCreativeCommonsConfirmed")
-        val strCreativeCommonsConfirmed: String? = "",
+        var strCreativeCommonsConfirmed: String? = "",
         @ColumnInfo
         @Json(name = "dateModified")
-        val dateModified: String? = "",
+        var dateModified: String? = "",
         @ColumnInfo
-        var isFavourite: Boolean = false
+        var isFavourite: Boolean = false,
+        @ColumnInfo
+        var isUserCreated: Boolean = false,
     )
 }

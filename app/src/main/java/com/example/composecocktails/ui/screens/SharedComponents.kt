@@ -24,10 +24,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.ui.theme.gradientErrorBackground
 
+@ExperimentalCoilApi
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @ExperimentalMaterialApi
 @Composable

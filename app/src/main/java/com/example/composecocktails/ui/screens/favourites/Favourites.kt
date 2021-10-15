@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
 import com.example.composecocktails.Screens
 import com.example.composecocktails.ui.screens.CocktailListItem
 import com.example.composecocktails.ui.screens.DetailsWindow
@@ -25,6 +26,7 @@ import com.example.composecocktails.ui.theme.gradientBlueBackground
 import com.example.composecocktails.ui.theme.gradientDetailsSearch
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+@ExperimentalCoilApi
 @ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @ExperimentalFoundationApi

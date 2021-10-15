@@ -1,6 +1,7 @@
 package com.example.composecocktails
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.*
@@ -21,7 +23,9 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.annotation.ExperimentalCoilApi
 import com.example.composecocktails.ui.screens.SharedViewModel
+import com.example.composecocktails.ui.screens.createCocktail.CreateCocktail
 import com.example.composecocktails.ui.screens.favourites.Favourites
 import com.example.composecocktails.ui.screens.home.Home
 import com.example.composecocktails.ui.theme.*
@@ -40,7 +44,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val sharedViewModel by viewModels<SharedViewModel>()
-
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         setContent {
             ComposeCocktailsTheme {
                 Surface {
@@ -54,6 +58,7 @@ class MainActivity : ComponentActivity() {
 }
 
 //https://developer.android.com/jetpack/compose/navigation#bottom-nav
+@ExperimentalCoilApi
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -62,11 +67,14 @@ class MainActivity : ComponentActivity() {
 fun BottomNav(sharedViewModel: SharedViewModel) {
     val items = listOf(
         Screens.Home,
-        Screens.Favourites
+        Screens.Favourites,
+        Screens.Create
     )
     val navController = rememberAnimatedNavController()
     val homeListState = rememberLazyListState()
     val favouritesListState = rememberLazyListState()
+    val createListState = rememberLazyListState()
+
     Scaffold(
         bottomBar = {
             BottomNavigation {
@@ -89,6 +97,9 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
                                     Screens.Favourites.iconColour = Color.Red
                                 }
                                 "home" -> {
+                                    Screens.Favourites.iconColour = Color.LightGray
+                                }
+                                "create" -> {
                                     Screens.Favourites.iconColour = Color.LightGray
                                 }
                             }
@@ -124,7 +135,7 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
                     slideInHorizontally()
                 },
                 exitTransition = {_, _ ->
-                    slideOutHorizontally(targetOffsetX = { -1000 })
+                    slideOutHorizontally()
                 }
             ) {
                 Home(sharedViewModel, homeListState)
@@ -132,13 +143,24 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
             composable(
                 Screens.Favourites.route,
                 enterTransition = {_, _ ->
-                    slideInHorizontally(initialOffsetX = { 1000 })
+                    slideInHorizontally()
                 },
                 exitTransition = {_, _ ->
-                    slideOutHorizontally(targetOffsetX = { 1000 })
+                    slideOutHorizontally()
                 }
             ) {
                 Favourites(sharedViewModel, favouritesListState)
+            }
+            composable(
+                Screens.Create.route,
+                enterTransition = {_, _ ->
+                    slideInHorizontally()
+                },
+                exitTransition = {_, _ ->
+                    slideOutHorizontally()
+                }
+            ){
+                CreateCocktail(sharedViewModel, createListState)
             }
         }
     }
@@ -147,4 +169,5 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
 sealed class Screens(val icon: ImageVector, var iconColour: Color, val title: String, val route: String) {
     object Home : Screens(Icons.Filled.Home, Color.LightGray,"Home", "home")
     object Favourites : Screens(Icons.Filled.Favorite, Color.LightGray,"Favourites", "favourites")
+    object Create : Screens(Icons.Filled.Add, Color.LightGray,"Create", "create")
 }
