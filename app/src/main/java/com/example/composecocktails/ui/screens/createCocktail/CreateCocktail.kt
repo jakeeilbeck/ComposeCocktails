@@ -96,6 +96,7 @@ fun CreateCocktail(
     val measure15 = rememberSaveable { mutableStateOf("") }
     val ingredient15 = rememberSaveable { mutableStateOf("") }
 
+    //The visibility of the button to add / save the cocktail is based on validCocktail
     val validCocktail = mutableStateOf(
         drinkName.value.isNotBlank() &&
                 drinkInstructions.value.isNotBlank() &&
@@ -103,6 +104,7 @@ fun CreateCocktail(
                 ingredient1.value.isNotBlank()
     )
 
+    //Not called anywhere but as is triggered when user closes the create menu (due to mutableState values)
     val clearCocktail = mutableStateOf(
         if (!fabOpenCreateCocktail) {
             drinkName.value = ""
@@ -127,6 +129,7 @@ fun CreateCocktail(
         }
     )
 
+    //Used to scroll down as more cocktail measures / ingredients get added
     fun scrollToBottom() = coroutineScope.launch {
         cocktailComponentsListState.animateScrollBy(
             listState
@@ -711,8 +714,9 @@ fun Fab(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    var isAdding by remember { mutableStateOf(false) }
+    var isAddingCreatedCocktail by remember { mutableStateOf(false) }
     val successGreen = Color(0xFF66BB6A)
+    //FABs change colour once created cocktail is valid
     val fabColour by animateColorAsState(
         targetValue = if (validCocktail) {
             successGreen
@@ -728,16 +732,17 @@ fun Fab(
 
     Row {
         AnimatedVisibility(visible = validCocktail) {
+            //Add / save created cocktail - only displays if cocktail is valid
             FloatingActionButton(
                 onClick = {
                     addCreatedCocktail()
                     focusManager.clearFocus()
                     keyboardController?.hide()
-                    isAdding = !isAdding
+                    isAddingCreatedCocktail = !isAddingCreatedCocktail
 
                     Timer(false).schedule(1500) {
                         updateCreateStatus(!clickStatus)
-                        isAdding = !isAdding
+                        isAddingCreatedCocktail = !isAddingCreatedCocktail
                     }
 
                 },
@@ -746,7 +751,7 @@ fun Fab(
                 backgroundColor = fabColour
             ) {
                 AnimatedContent(
-                    targetState = isAdding,
+                    targetState = isAddingCreatedCocktail,
                     transitionSpec = {
                         slideInVertically({ height -> height }) + fadeIn() with
                                 slideOutVertically({ height -> -height }) + fadeOut()
@@ -763,6 +768,7 @@ fun Fab(
             }
         }
 
+        //Displays create a cocktail fields
         FloatingActionButton(
             onClick = { updateCreateStatus(!clickStatus) },
             modifier = modifier
@@ -790,6 +796,7 @@ fun Fab(
     }
 }
 
+//reusable composable used for all create a cocktail fields
 @ExperimentalComposeUiApi
 @Composable
 fun CocktailComponent(
