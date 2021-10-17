@@ -120,6 +120,28 @@ fun CocktailListItem(
     }
 }
 
+@Composable
+fun Header(
+    text: String,
+    gradientBg: Brush,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        color = Color.Transparent,
+        modifier = modifier
+            .background(brush = gradientBg)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.subtitle1,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .background(Color.Transparent)
+        )
+    }
+}
+
 @ExperimentalAnimationApi
 @Composable
 fun ErrorBanner(
