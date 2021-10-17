@@ -13,9 +13,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -219,7 +218,9 @@ fun CreateCocktail(
                                 showInfo = {
                                     viewModel.updateAdditionalInfo(it, Screens.Create.title)
                                 },
-                                updateFavourite = { viewModel.updateFavourite(it) }
+                                updateFavourite = { viewModel.updateFavourite(it) },
+                                listIconSelected = Icons.Outlined.DeleteForever,
+                                listIconUnselected = Icons.Outlined.DeleteForever,
                             )
                         }
                     }

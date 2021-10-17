@@ -13,12 +13,14 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.LocalBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -37,7 +39,9 @@ fun CocktailListItem(
     modifier: Modifier = Modifier,
     cocktail: Cocktail.Drink,
     showInfo: (Cocktail.Drink?) -> Unit,
-    updateFavourite: (Cocktail.Drink) -> Unit
+    updateFavourite: (Cocktail.Drink) -> Unit,
+    listIconSelected: ImageVector = Icons.Filled.Favorite,
+    listIconUnselected: ImageVector = Icons.Outlined.FavoriteBorder,
 ) {
     Card(
         modifier = modifier
@@ -48,16 +52,26 @@ fun CocktailListItem(
         Row {
             ListItem(
                 icon = {
-                    Image(
-                        painter = rememberImagePainter(
-                            data = cocktail.strDrinkThumb,
-                            builder = {crossfade(true)}
-                        ),
-                        modifier = modifier
-                            .size(64.dp)
-                            .clip(shape = MaterialTheme.shapes.small),
-                        contentDescription = null
-                    )
+                    if (cocktail.strDrinkThumb.isNullOrBlank()){
+                        Icon(
+                            imageVector = Icons.Outlined.LocalBar,
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(shape = MaterialTheme.shapes.small),
+                            contentDescription = null
+                        )
+                    }else{
+                        Image(
+                            painter = rememberImagePainter(
+                                data = cocktail.strDrinkThumb,
+                                builder = { crossfade(true) }
+                            ),
+                            modifier = modifier
+                                .size(64.dp)
+                                .clip(shape = MaterialTheme.shapes.small),
+                            contentDescription = null
+                        )
+                    }
                 },
                 text = { Text(text = cocktail.strDrink.toString()) },
                 secondaryText = { Text(text = cocktail.strCategory.toString()) },
@@ -105,9 +119,9 @@ fun CocktailListItem(
                             label = "Size"
                         ) { 42.dp }
 
-                        //update favourites icon with animations
+                        //update icon with animation
                         Icon(
-                            imageVector = if (cocktail.isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            imageVector = if (cocktail.isFavourite) listIconSelected else listIconUnselected,
                             contentDescription = null,
                             tint = animateTint,
                             modifier = modifier
