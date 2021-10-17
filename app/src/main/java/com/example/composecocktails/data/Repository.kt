@@ -51,6 +51,10 @@ class Repository @Inject constructor(private val api: Api, private val cocktailD
     }
 
     fun getAllFavourites(): LiveData<List<Cocktail.Drink>> {
-        return favouritesDao.getAllFavourites()
+        return cocktailDao.getAllFavourites()
+    }
+
+    fun getAllUserCreated(): LiveData<List<Cocktail.Drink>> {
+        return cocktailDao.getAllUserCreated()
     }
 }

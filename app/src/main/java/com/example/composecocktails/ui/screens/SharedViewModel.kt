@@ -3,6 +3,7 @@ package com.example.composecocktails.ui.screens
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.composecocktails.Screens
 import com.example.composecocktails.data.Repository
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.util.Utils
@@ -36,6 +37,10 @@ class SharedViewModel @Inject constructor(
     var cocktailAdditionalInfoFavourites by mutableStateOf<Cocktail.Drink?>(null)
     val showAdditionalInfoFavourites = mutableStateOf(false)
     var favouriteCocktails = repository.getAllFavourites()
+
+    var cocktailAdditionalInfoCreate by mutableStateOf<Cocktail.Drink?>(null)
+    val showAdditionalInfoCreate = mutableStateOf(false)
+    var createdCocktails = repository.getAllUserCreated()
 
     init {
         getRandomCocktails()
@@ -179,7 +184,7 @@ class SharedViewModel @Inject constructor(
         }
 
         when (screen) {
-            "Home" -> {
+            Screens.Home.title -> {
                 //on item click, close additional info if already open
                 if (cocktailAdditionalInfoHome == cocktailInfo) {
                     showAdditionalInfoHome.value = false
@@ -194,7 +199,7 @@ class SharedViewModel @Inject constructor(
                     showAdditionalInfoHome.value = true
                 }
             }
-            "Favourites" -> {
+            Screens.Favourites.title -> {
                 if (cocktailAdditionalInfoFavourites == cocktailInfo) {
                     showAdditionalInfoFavourites.value = false
                     Timer(false).schedule(100) {
@@ -213,6 +218,17 @@ class SharedViewModel @Inject constructor(
                             })
                         }
                     }
+                }
+            }
+            Screens.Create.title -> {
+                if (cocktailAdditionalInfoCreate == cocktailInfo) {
+                    showAdditionalInfoCreate.value = false
+                    Timer(false).schedule(100) {
+                        cocktailAdditionalInfoCreate = null
+                    }
+                } else {
+                    cocktailAdditionalInfoCreate = cocktailInfo
+                    showAdditionalInfoCreate.value = true
                 }
             }
         }
@@ -250,6 +266,14 @@ class SharedViewModel @Inject constructor(
         viewModelScope.launch {
             repository.deleteById(
                 cocktail.idDrink
+            )
+        }
+    }
+
+    fun addCreatedCocktail(cocktail: Cocktail.Drink){
+        viewModelScope.launch {
+            repository.insertCocktail(
+                cocktail
             )
         }
     }

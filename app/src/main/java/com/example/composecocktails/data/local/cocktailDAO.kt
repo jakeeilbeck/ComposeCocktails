@@ -27,4 +27,7 @@ interface CocktailDAO {
 
     @Query("SELECT * FROM cocktail_table WHERE isFavourite = 1 ORDER BY strDrink ASC")
     fun getAllFavourites(): LiveData<List<Cocktail.Drink>>
+
+    @Query("SELECT * FROM cocktail_table WHERE isUserCreated = 1 ORDER BY strDrink ASC")
+    fun getAllUserCreated(): LiveData<List<Cocktail.Drink>>
 }
