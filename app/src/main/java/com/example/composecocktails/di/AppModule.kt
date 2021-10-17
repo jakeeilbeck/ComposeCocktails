@@ -3,8 +3,8 @@ package com.example.composecocktails.di
 import android.content.Context
 import androidx.room.Room
 import com.example.composecocktails.data.Repository
+import com.example.composecocktails.data.local.CocktailDAO
 import com.example.composecocktails.data.local.FavouriteDatabase
-import com.example.composecocktails.data.local.FavouritesDAO
 import com.example.composecocktails.data.remote.Api
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -62,8 +62,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(api: Api, favouritesDAO: FavouritesDAO): Repository =
-        Repository(api, favouritesDAO)
+    fun provideRepository(api: Api, cocktailDAO: CocktailDAO): Repository =
+        Repository(api, cocktailDAO)
 
     @Provides
     @Singleton
@@ -71,13 +71,13 @@ object AppModule {
         Room.databaseBuilder(
             context.applicationContext,
             FavouriteDatabase::class.java,
-            "favourite_cocktails_table"
+            "cocktail_table"
         )
             .fallbackToDestructiveMigration()
             .build()
 
     @Provides
     @Singleton
-    fun provideFavouritesDAO(favouriteDatabase: FavouriteDatabase): FavouritesDAO =
-        favouriteDatabase.favouritesDAO
+    fun provideFavouritesDAO(favouriteDatabase: FavouriteDatabase): CocktailDAO =
+        favouriteDatabase.cocktailDAO
 }

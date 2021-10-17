@@ -1,14 +1,14 @@
 package com.example.composecocktails.data
 
 import androidx.lifecycle.LiveData
-import com.example.composecocktails.data.local.FavouritesDAO
+import com.example.composecocktails.data.local.CocktailDAO
 import com.example.composecocktails.data.models.Cocktail
 import com.example.composecocktails.data.remote.Api
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Repository @Inject constructor(private val api: Api, private val favouritesDao: FavouritesDAO) {
+class Repository @Inject constructor(private val api: Api, private val cocktailDao: CocktailDAO) {
 
     suspend fun searchRandomCocktail(): List<Cocktail.Drink?>?{
         return api.searchRandomCocktail().drinks
@@ -27,27 +27,27 @@ class Repository @Inject constructor(private val api: Api, private val favourite
     }
 
     suspend fun insertCocktail(cocktail: Cocktail.Drink){
-        favouritesDao.insert(cocktail)
+        cocktailDao.insert(cocktail)
     }
 
     suspend fun updateCocktail(cocktail: Cocktail.Drink){
-        favouritesDao.update(cocktail)
+        cocktailDao.update(cocktail)
     }
 
     suspend fun getCocktailById(cocktailId: String): Cocktail.Drink{
-        return favouritesDao.getById(cocktailId)
+        return cocktailDao.getById(cocktailId)
     }
 
     suspend fun deleteCocktail(cocktail: Cocktail.Drink){
-        favouritesDao.delete(cocktail)
+        cocktailDao.delete(cocktail)
     }
 
     suspend fun deleteById(cocktailId: String){
-        favouritesDao.deleteById(cocktailId)
+        cocktailDao.deleteById(cocktailId)
     }
 
     suspend fun checkFavourite(cocktailId: String): Int{
-        return favouritesDao.checkIsFavourite(cocktailId)
+        return cocktailDao.checkIsFavourite(cocktailId)
     }
 
     fun getAllFavourites(): LiveData<List<Cocktail.Drink>> {

@@ -12,7 +12,7 @@ data class Cocktail(
     @Json(name = "drinks")
     val drinks: List<Drink?>?
 ) {
-    @Entity(tableName = "favourites_table")
+    @Entity(tableName = "cocktail_table")
     @JsonClass(generateAdapter = true)
     data class Drink(
         @NonNull

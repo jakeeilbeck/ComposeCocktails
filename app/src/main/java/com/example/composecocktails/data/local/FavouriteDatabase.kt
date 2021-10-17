@@ -6,5 +6,5 @@ import com.example.composecocktails.data.models.Cocktail
 
 @Database(entities = [Cocktail.Drink::class], version = 3, exportSchema = false)
 abstract class FavouriteDatabase: RoomDatabase() {
-    abstract val favouritesDAO: FavouritesDAO
+    abstract val cocktailDAO: CocktailDAO
 }
