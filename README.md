@@ -7,7 +7,7 @@
 An app built with [Jetpack Compose](https://developer.android.com/jetpack/compose) to experiment with and learn the new UI toolkit.  
 API provided by https://www.thecocktaildb.com/api.php
 
-There are 3 screens: 
+There are 3 screens:
 * Home - Displays a carousel of 10 random cocktails, and allows searching cocktail by name or ingredient
 * Favourites - List any cocktails favourited by the user
 * Create - Allows the user to create their own cocktail
