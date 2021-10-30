@@ -87,24 +87,16 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
                             Icon(
                                 imageVector = screen.icon,
                                 contentDescription = "",
-                                tint = screen.iconColour,
                             )
                         },
-                        label = { Text(screen.title) },
+                        label = {
+                            Text(
+                                text = screen.title,
+                                color = Color.LightGray,
+                            )
+                        },
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
-                            when(screen.route){
-                                "favourites" -> {
-                                    Screens.Favourites.iconColour = Color.Red
-                                }
-                                "home" -> {
-                                    Screens.Favourites.iconColour = Color.LightGray
-                                }
-                                "create" -> {
-                                    Screens.Favourites.iconColour = Color.LightGray
-                                }
-                            }
-
                             navController.navigate(screen.route) {
                                 // Pop up to the start destination of the graph to
                                 // avoid building up a large stack of destinations
@@ -118,8 +110,17 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
                                 // Restore state when reselecting a previously selected item
                                 restoreState = true
                             }
-
-                        }
+                        },
+                        alwaysShowLabel = false,
+                        selectedContentColor =
+                            when (screen.route) {
+                                "favourites" -> {
+                                    Color.Red
+                                }
+                                else -> {
+                                    LocalContentColor.current
+                                }
+                            },
                     )
                 }
             }
@@ -132,10 +133,10 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
         ) {
             composable(
                 Screens.Home.route,
-                enterTransition = {_, _ ->
+                enterTransition = { _, _ ->
                     slideInHorizontally()
                 },
-                exitTransition = {_, _ ->
+                exitTransition = { _, _ ->
                     slideOutHorizontally()
                 }
             ) {
@@ -143,10 +144,10 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
             }
             composable(
                 Screens.Favourites.route,
-                enterTransition = {_, _ ->
+                enterTransition = { _, _ ->
                     slideInHorizontally()
                 },
-                exitTransition = {_, _ ->
+                exitTransition = { _, _ ->
                     slideOutHorizontally()
                 }
             ) {
@@ -154,21 +155,25 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
             }
             composable(
                 Screens.Create.route,
-                enterTransition = {_, _ ->
+                enterTransition = { _, _ ->
                     slideInHorizontally()
                 },
-                exitTransition = {_, _ ->
+                exitTransition = { _, _ ->
                     slideOutHorizontally()
                 }
-            ){
+            ) {
                 CreateCocktail(sharedViewModel, createListState)
             }
         }
     }
 }
 
-sealed class Screens(val icon: ImageVector, var iconColour: Color, val title: String, val route: String) {
-    object Home : Screens(Icons.Filled.Home, Color.LightGray,"Home", "home")
-    object Favourites : Screens(Icons.Filled.Favorite, Color.LightGray,"Favourites", "favourites")
-    object Create : Screens(Icons.Filled.Add, Color.LightGray,"Create", "create")
+sealed class Screens(
+    val icon: ImageVector,
+    val title: String,
+    val route: String
+) {
+    object Home : Screens(Icons.Filled.Home, "Home", "home")
+    object Favourites : Screens(Icons.Filled.Favorite, "Favourites", "favourites")
+    object Create : Screens(Icons.Filled.Add, "Create", "create")
 }
