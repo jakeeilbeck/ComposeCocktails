@@ -129,9 +129,9 @@ class SharedViewModel @Inject constructor(
     fun updateFavourite(cocktail: Cocktail.Drink) {
         /*
         https://stackoverflow.com/questions/66448722
-        Replace clicked cocktail item with isFavourite reassigned instead of just reassigning
-        isFavourite to existing item, as object reference needs to change for recomposition to
-        happen to list item
+        Replace clicked cocktail item with a copy that has isFavourite reassigned instead of just
+        reassigning isFavourite to existing item, as object reference needs to change for
+        recomposition to happen to list item
         */
 
         //finding the index based on ID rather than object as finding by object caused the following
@@ -139,26 +139,27 @@ class SharedViewModel @Inject constructor(
         // info from Favourites, then deleted it from Favourites
         val cocktailIndex = searchedCocktailList.indexOf(
             searchedCocktailList.find {
-            it?.idDrink == cocktail.idDrink
-        })
-        val replacement = cocktail.copy()
+                it?.idDrink == cocktail.idDrink
+            })
+
+        val replacementCocktail = cocktail.copy()
 
         if (checkIsFavourite(cocktail.idDrink)) {
 
             deleteFromFavourites(cocktail)
-
-            replacement.isFavourite = false
-
-            if (cocktailIndex >= 0) {
-                searchedCocktailList[cocktailIndex] = replacement
+            if (searchedCocktailList.contains(cocktail)){
+                searchedCocktailList.removeAt(cocktailIndex)
+                searchedCocktailList.add(cocktailIndex, replacementCocktail.apply { isFavourite = false })
             }
 
         } else {
 
             addToFavourites(cocktail)
+            if (searchedCocktailList.contains(cocktail)) {
+                searchedCocktailList.removeAt(cocktailIndex)
+                searchedCocktailList.add(cocktailIndex, replacementCocktail.apply { isFavourite = true })
+            }
 
-            replacement.isFavourite = true
-            searchedCocktailList[cocktailIndex] = replacement
         }
     }
 
