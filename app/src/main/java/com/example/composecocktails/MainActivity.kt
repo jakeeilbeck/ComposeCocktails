@@ -36,11 +36,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @ExperimentalCoilApi
-    @ExperimentalFoundationApi
-    @ExperimentalAnimationApi
-    @ExperimentalComposeUiApi
-    @ExperimentalMaterialApi
+    @OptIn(
+        ExperimentalCoilApi::class,
+        ExperimentalFoundationApi::class,
+        ExperimentalAnimationApi::class,
+        ExperimentalComposeUiApi::class,
+        ExperimentalMaterialApi::class
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -129,14 +131,15 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
         AnimatedNavHost(
             navController,
             startDestination = Screens.Home.route,
-            Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
         ) {
             composable(
                 Screens.Home.route,
-                enterTransition = { _, _ ->
+                enterTransition = {
                     slideInHorizontally()
                 },
-                exitTransition = { _, _ ->
+                exitTransition = {
                     slideOutHorizontally()
                 }
             ) {
@@ -144,10 +147,10 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
             }
             composable(
                 Screens.Favourites.route,
-                enterTransition = { _, _ ->
+                enterTransition = {
                     slideInHorizontally()
                 },
-                exitTransition = { _, _ ->
+                exitTransition = {
                     slideOutHorizontally()
                 }
             ) {
@@ -155,10 +158,10 @@ fun BottomNav(sharedViewModel: SharedViewModel) {
             }
             composable(
                 Screens.Create.route,
-                enterTransition = { _, _ ->
+                enterTransition = {
                     slideInHorizontally()
                 },
-                exitTransition = { _, _ ->
+                exitTransition = {
                     slideOutHorizontally()
                 }
             ) {

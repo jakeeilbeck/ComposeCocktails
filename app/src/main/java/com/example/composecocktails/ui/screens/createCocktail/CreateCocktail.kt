@@ -753,8 +753,8 @@ fun Fab(
                 AnimatedContent(
                     targetState = isAddingCreatedCocktail,
                     transitionSpec = {
-                        slideInVertically({ height -> height }) + fadeIn() with
-                                slideOutVertically({ height -> -height }) + fadeOut()
+                        slideInVertically { height -> height } + fadeIn() with
+                                slideOutVertically { height -> -height } + fadeOut()
                     }) { targetStatus ->
                     Icon(
                         imageVector = if (targetStatus) {
@@ -778,8 +778,8 @@ fun Fab(
             AnimatedContent(
                 targetState = clickStatus,
                 transitionSpec = {
-                    slideInVertically({ height -> height }) + fadeIn() with
-                            slideOutVertically({ height -> -height }) + fadeOut()
+                    slideInVertically { height -> height } + fadeIn() with
+                            slideOutVertically { height -> -height } + fadeOut()
                 }) { targetStatus ->
                 Icon(
                     imageVector =
